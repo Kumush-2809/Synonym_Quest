@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synonym Quest — Inglizcha sinonimlarni o‘rgan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">S</span> SYNONYM<span>QUEST</span></a>
+    <div class="top-actions">
+      <span class="saved-count" id="wordCount">0 ta so‘z juftligi</span>
+      <button class="sound-btn" id="soundToggle" aria-label="Ovoz">🔊</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">LEARN • PLAY • REMEMBER</p>
+        <h1>So‘z boyligingni<br><span>o‘yin bilan oshir!</span></h1>
+        <p class="hero-desc">Inglizcha sinonimlarni o‘zing kirit, keyin ular asosida 5 xil qiziqarli o‘yinda mashq qil.</p>
+        <a class="primary-btn" href="#games">O‘yinlarni boshlash <span>→</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="float-word word-a">HAPPY</div><div class="float-word word-b">GLAD</div>
+        <div class="float-word word-c">JOYFUL</div><div class="main-bubble">Aa</div>
+        <span class="spark s1">✦</span><span class="spark s2">✧</span><span class="spark s3">✦</span>
+      </div>
+    </section>
+
+    <section class="section" id="mywords">
+      <div class="section-heading">
+        <div><p class="eyebrow">PERSONAL WORD BANK</p><h2>Mening sinonimlarim</h2></div>
+        <span class="section-note">So‘zlaring — o‘yinlaring</span>
+      </div>
+      <div class="word-panel">
+        <form id="wordForm" class="word-form">
+          <label>Asosiy so‘z<input id="mainWord" type="text" placeholder="masalan: happy" required maxlength="35"></label>
+          <label>Sinonimi<input id="synonymWord" type="text" placeholder="masalan: joyful" required maxlength="35"></label>
+          <button class="primary-btn add-btn" type="submit">＋ Qo‘shish</button>
+        </form>
+        <p class="form-hint">Har bir qatorda bitta asosiy so‘z va uning sinonimini kiriting. Masalan: <b>big — large</b>.</p>
+        <div id="wordList" class="word-list"></div>
+        <div class="word-footer">
+          <span id="wordStatus">Boshlash uchun o‘z so‘zlaringizni qo‘shing yoki namunaviy so‘zlardan foydalaning.</span>
+          <button class="text-btn" id="resetWords" type="button">Namunaviy so‘zlarni tiklash</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="games">
+      <div class="section-heading">
+        <div><p class="eyebrow">PICK YOUR CHALLENGE</p><h2>5 xil o‘yin</h2></div>
+        <span class="section-note">Barcha o‘yinlar siz kiritgan so‘zlardan tuziladi</span>
+      </div>
+      <div class="games-grid">
+        <button class="game-card" data-game="match"><span class="game-icon purple">⇄</span><span class="game-number">01 / MATCH</span><strong>Juftini top</strong><small>So‘zlarni mos sinonimlari bilan bog‘la.</small><span class="card-arrow">↗</span></button>
+        <button class="game-card" data-game="quiz"><span class="game-icon blue">?</span><span class="game-number">02 / QUIZ</span><strong>To‘g‘ri javob</strong><small>Berilgan so‘zning sinonimini tanla.</small><span class="card-arrow">↗</span></button>
+        <button class="game-card" data-game="speed"><span class="game-icon orange">⏱</span><span class="game-number">03 / SPEED</span><strong>Tezkor sinov</strong><small>60 soniyada imkon qadar ko‘p javob ber.</small><span class="card-arrow">↗</span></button>
+        <button class="game-card" data-game="scramble"><span class="game-icon green">⌁</span><span class="game-number">04 / SCRAMBLE</span><strong>Harflarni tartibla</strong><small>Aralash harflardan sinonimni tuz.</small><span class="card-arrow">↗</span></button>
+        <button class="game-card" data-game="sentence"><span class="game-icon pink">✎</span><span class="game-number">05 / SENTENCE</span><strong>Gapni to‘ldir</strong><small>Gap mazmuniga mos sinonimni top.</small><span class="card-arrow">↗</span></button>
+      </div>
+    </section>
+
+    <section class="play-section" id="playArea" hidden>
+      <div class="play-header"><div><p class="eyebrow">GAME IN PROGRESS</p><h2 id="gameTitle">O‘yin</h2></div><button class="close-btn" id="closeGame">✕ Yopish</button></div>
+      <div class="game-stage" id="gameStage"></div>
+    </section>
+    <footer><span>✦ SYNONYM QUEST</span><span>Har kuni oz-ozdan — katta natija!</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
