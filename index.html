@@ -10,72 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-            overflow-x: hidden;
-        }
-
-        /* Custom Animations */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
-        .animate-shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.92); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-pop {
-            animation: popIn 0.25s ease-out forwards;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.3); }
-            50% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
-        }
-        .pulse-glow {
-            animation: pulseGlow 2s infinite;
-        }
-
-        /* Memory Card 3D Flip */
-        .perspective-1000 {
-            perspective: 1000px;
-        }
-        .transform-style-3d {
-            transform-style: preserve-3d;
-            transition: transform 0.45s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-        .backface-hidden {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+    <!-- Tashqi CSS fayl -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-indigo-100 selection:text-indigo-800">
 
@@ -154,9 +90,7 @@
     <!-- Main Content Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- ========================================================= -->
-        <!-- QUICK STUDENT IMPORT BAR (KALIT SO'Z / HAVOLA ORQALI)     -->
-        <!-- ========================================================= -->
+        <!-- QUICK STUDENT IMPORT BAR -->
         <div class="mb-6 bg-gradient-to-r from-indigo-600 via-indigo-700 to-teal-600 rounded-3xl p-4 sm:p-5 text-white shadow-md shadow-indigo-100">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="flex items-start sm:items-center gap-3">
@@ -183,12 +117,8 @@
             </div>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- VIEW 1: GAMES HUB & ACTIVE GAME ARENA                     -->
-        <!-- ========================================================= -->
+        <!-- VIEW 1: GAMES HUB & ACTIVE GAME ARENA -->
         <section id="view-games" class="space-y-6">
-            
-            <!-- Section Filter Bar (Choose which sections to play with!) -->
             <div class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                     <div>
@@ -210,12 +140,8 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Section Checkboxes -->
-                <div id="gameSectionFilters" class="flex flex-wrap gap-2.5 pt-4">
-                    <!-- Populated via JS -->
-                </div>
+                <div id="gameSectionFilters" class="flex flex-wrap gap-2.5 pt-4"></div>
 
-                <!-- Active Pool Summary -->
                 <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div class="flex items-center gap-2 text-slate-600">
                         <i data-lucide="layers" class="w-4 h-4 text-teal-600"></i>
@@ -228,10 +154,8 @@
                 </div>
             </div>
 
-            <!-- Game Selection Grid (Hidden while a game is actively running) -->
             <div id="gamesMenuGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                
-                <!-- Game 1: Matching Grid -->
+                <!-- Game 1 -->
                 <div class="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-indigo-300 transition-all flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -241,9 +165,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700">1-o'yin</span>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">Juftlikni Toping</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                            Guruh ichidagi istalgan sinonimlarni o'zaro yoki o'zbekcha ma'nosi bilan moslashtiring. Topilganda barcha sinonimlar ko'rinadi!
-                        </p>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-4">Guruh ichidagi istalgan sinonimlarni o'zaro yoki o'zbekcha ma'nosi bilan moslashtiring.</p>
                     </div>
                     <button onclick="startGame(1)" class="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
@@ -251,7 +173,7 @@
                     </button>
                 </div>
 
-                <!-- Game 2: Multiple Choice Quiz -->
+                <!-- Game 2 -->
                 <div class="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-teal-300 transition-all flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -261,9 +183,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700">2-o'yin</span>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">Tezkor Viktorina & Ortiqcha So'z</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                            Sinonim va tarjimalarni toping hamda 4 ta so'z ichidan ushbu sinonimlar qatoriga kirmaydigan <strong>ortiqcha so'zni</strong> aniqlang!
-                        </p>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-4">Sinonim va tarjimalarni toping hamda ortiqcha so'zni aniqlang!</p>
                     </div>
                     <button onclick="startGame(2)" class="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-md shadow-teal-100 transition flex items-center justify-center gap-2">
                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
@@ -271,7 +191,7 @@
                     </button>
                 </div>
 
-                <!-- Game 3: Word Scramble -->
+                <!-- Game 3 -->
                 <div class="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-amber-300 transition-all flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -281,9 +201,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700">3-o'yin</span>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">So'z Yig'uvchi</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                            O'zbekcha tarjima va guruhdagi ma'lum sinonimlar yordamida chalkash harflardan yana bir sinonimni yig'ing!
-                        </p>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-4">Chalkash harflardan yana bir sinonimni yig'ing!</p>
                     </div>
                     <button onclick="startGame(3)" class="w-full py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-md shadow-amber-100 transition flex items-center justify-center gap-2">
                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
@@ -291,7 +209,7 @@
                     </button>
                 </div>
 
-                <!-- Game 4: True or False Blitz -->
+                <!-- Game 4 -->
                 <div class="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-rose-300 transition-all flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -301,9 +219,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700">4-o'yin</span>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">To'g'ri yoki Noto'g'ri</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                            60 soniyalik tezkor sinov! Istalgan ikkita sinonim yoki o'zbekcha tarjima bir guruhga tegishli ekanligini aniqlang.
-                        </p>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-4">60 soniyalik tezkor sinov!</p>
                     </div>
                     <button onclick="startGame(4)" class="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md shadow-rose-100 transition flex items-center justify-center gap-2">
                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
@@ -311,7 +227,7 @@
                     </button>
                 </div>
 
-                <!-- Game 5: Memory Matrix -->
+                <!-- Game 5 -->
                 <div class="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-purple-300 transition-all flex flex-col justify-between md:col-span-2 lg:col-span-1">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -321,21 +237,17 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700">5-o'yin</span>
                         </div>
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">Xotira Matritsasi</h3>
-                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                            Yopiq katakchalar ortidagi sinonimlarni juftlang. Topilganda guruhning o'zbekcha ma'nosi va barcha sinonimlari ochiladi!
-                        </p>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-4">Yopiq katakchalar ortidagi sinonimlarni juftlang.</p>
                     </div>
                     <button onclick="startGame(5)" class="w-full py-3 px-4 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md shadow-purple-100 transition flex items-center justify-center gap-2">
                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                         <span>O'yinni boshlash</span>
                     </button>
                 </div>
-
             </div>
 
             <!-- Active Game Arena Container -->
             <div id="activeGameArena" class="hidden bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden animate-pop">
-                <!-- Game Top Header Bar -->
                 <div class="bg-slate-900 text-white px-5 py-4 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <button onclick="exitGame()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1.5 text-xs font-semibold">
@@ -349,13 +261,11 @@
                     </div>
 
                     <div class="flex items-center gap-3 sm:gap-5">
-                        <!-- Streak -->
                         <div class="flex items-center gap-1.5 bg-slate-800 px-3 py-1.5 rounded-xl">
                             <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
                             <span class="text-xs text-slate-400">Seriya:</span>
                             <span id="arenaStreak" class="font-extrabold text-sm text-orange-400">0</span>
                         </div>
-                        <!-- Score -->
                         <div class="flex items-center gap-1.5 bg-slate-800 px-3 py-1.5 rounded-xl">
                             <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
                             <span class="text-xs text-slate-400">Ball:</span>
@@ -364,20 +274,13 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Game Playfield -->
-                <div id="gameBoardContent" class="p-6 sm:p-8 min-h-[380px] flex flex-col justify-center">
-                    <!-- Game-specific UI injected dynamically -->
-                </div>
+                <div id="gameBoardContent" class="p-6 sm:p-8 min-h-[380px] flex flex-col justify-center"></div>
             </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- VIEW 2: ADD & MANAGE WORDS ("SO'ZLAR QO'SHISH")           -->
-        <!-- ========================================================= -->
+        <!-- VIEW 2: ADD & MANAGE WORDS -->
         <section id="view-words" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Left Form: Add / Edit Multi-Synonym Group -->
                 <div class="lg:col-span-5">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm sticky top-24">
                         <div class="flex items-center justify-between mb-5">
@@ -390,15 +293,11 @@
                                     <p class="text-xs text-slate-500">1 ta ma'noga istalgancha sinonim yozing</p>
                                 </div>
                             </div>
-                            <button type="button" id="cancelEditWordBtn" onclick="resetWordForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">
-                                Bekor qilish
-                            </button>
+                            <button type="button" id="editWordId" onclick="resetWordForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">Bekor qilish</button>
                         </div>
 
                         <form id="wordForm" onsubmit="handleWordSubmit(event)" class="space-y-4">
-                            <input type="hidden" id="editWordId" value="">
-
-                            <!-- Section Selector -->
+                            <input type="hidden" id="editWordIdInput" value="">
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Bo'limni tanlang *</label>
@@ -406,32 +305,24 @@
                                         <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i> Yangi bo'lim
                                     </button>
                                 </div>
-                                <select id="wordSectionSelect" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-bold text-slate-800">
-                                    <!-- Populated via JS -->
-                                </select>
+                                <select id="wordSectionSelect" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-bold text-slate-800"></select>
                             </div>
 
-                            <!-- Uzbek Meaning -->
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">O'zbekcha tarjimasi / ma'nosi *</label>
-                                <input type="text" id="uzbekMeaningInput" required placeholder="Masalan: Muhim, ahamiyatli, hal qiluvchi"
-                                    class="w-full px-4 py-3 rounded-2xl border border-teal-200 bg-teal-50/40 focus:bg-white focus:border-teal-500 outline-none text-sm font-bold text-teal-950">
+                                <input type="text" id="uzbekMeaningInput" required placeholder="Masalan: Muhim, ahamiyatli" class="w-full px-4 py-3 rounded-2xl border border-teal-200 bg-teal-50/40 focus:bg-white focus:border-teal-500 outline-none text-sm font-bold text-teal-950">
                             </div>
 
-                            <!-- Dynamic Synonyms List -->
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Inglizcha sinonimlar *</label>
                                     <span id="synonymInputCounter" class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">2 ta maydon</span>
                                 </div>
-                                <div id="dynamicSynonymsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                                    <!-- Dynamic rows injected via JS -->
-                                </div>
+                                <div id="dynamicSynonymsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                                 <button type="button" onclick="addSynonymInputField()" class="mt-2.5 w-full py-2.5 px-3 rounded-xl border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50 text-indigo-700 font-bold text-xs transition flex items-center justify-center gap-1.5">
                                     <i data-lucide="plus" class="w-4 h-4"></i>
-                                    <span>Yana sinonim qo'shish (3, 4, 5...)</span>
+                                    <span>Yana sinonim qo'shish</span>
                                 </button>
-                                <p class="text-[11px] text-slate-400 mt-1.5">Maslahat: Vergul bilan ajratilgan so'zlarni bitta katakka nusxalab tashlasangiz, avtomatik bo'linadi.</p>
                             </div>
 
                             <button type="submit" id="wordSubmitBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
@@ -442,44 +333,30 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Search & List of Saved Multi-Synonym Groups -->
                 <div class="lg:col-span-7">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div>
-                                <h3 class="text-lg font-extrabold text-slate-800">Saqlangan sinonimlar bazasi</h3>
-                                <p class="text-xs text-slate-500">Istalgan guruhni tahrirlang yoki yangi sinonimlar qo'shing</p>
-                            </div>
+                        <div>
+                            <h3 class="text-lg font-extrabold text-slate-800">Saqlangan sinonimlar bazasi</h3>
+                            <p class="text-xs text-slate-500">Istalgan guruhni tahrirlang yoki yangi sinonimlar qo'shing</p>
                         </div>
-
-                        <!-- Search & Section Filter -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="relative">
                                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                                <input type="text" id="wordSearchInput" oninput="renderWordsList()" placeholder="So'z yoki tarjima bo'yicha qidirish..."
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm">
+                                <input type="text" id="wordSearchInput" oninput="renderWordsList()" placeholder="So'z yoki tarjima bo'yicha qidirish..." class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm">
                             </div>
                             <select id="filterWordsBySection" onchange="renderWordsList()" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700">
                                 <option value="all">Barcha bo'limlar</option>
                             </select>
                         </div>
-
-                        <div id="wordsListContainer" class="space-y-3 pt-1">
-                            <!-- Populated via JS -->
-                        </div>
+                        <div id="wordsListContainer" class="space-y-3 pt-1"></div>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- VIEW 3: MANAGE SECTIONS ("BO'LIMLAR")                     -->
-        <!-- ========================================================= -->
+        <!-- VIEW 3: MANAGE SECTIONS -->
         <section id="view-sections" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Create New Section Card -->
                 <div class="lg:col-span-4 space-y-5">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                         <div class="flex items-center gap-3 mb-5">
@@ -495,10 +372,8 @@
                         <form onsubmit="handleAddSection(event)" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Bo'lim nomi *</label>
-                                <input type="text" id="newSectionName" required placeholder="Masalan: 1-dars yoki IELTS Speaking"
-                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-500 outline-none text-sm font-semibold">
+                                <input type="text" id="newSectionName" required placeholder="Masalan: 1-dars" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-500 outline-none text-sm font-semibold">
                             </div>
-
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Bo'lim rangi</label>
                                 <div class="flex items-center gap-3">
@@ -509,7 +384,6 @@
                                     <button type="button" data-color="purple" onclick="selectSectionColor('purple')" class="color-btn w-8 h-8 rounded-full bg-purple-500 transition"></button>
                                 </div>
                             </div>
-
                             <button type="submit" class="w-full py-3.5 px-5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-md shadow-teal-100 transition flex items-center justify-center gap-2">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                 <span>Bo'limni qo'shish</span>
@@ -517,13 +391,12 @@
                         </form>
                     </div>
 
-                    <!-- Backup & Restore Box -->
                     <div class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-3">
                         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
                             <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
                             <span>Zaxira nusxa (JSON fayl)</span>
                         </h3>
-                        <p class="text-xs text-slate-500">Barcha bo'lim va so'zlaringizni fayl sifatida yuklab oling yoki tiklang.</p>
+                        <p class="text-xs text-slate-500">Barcha bo'lim va so'zlaringizni yuklab oling yoki tiklang.</p>
                         <div class="flex flex-wrap gap-2">
                             <button onclick="exportDataJSON()" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center gap-1.5">
                                 <i data-lucide="download" class="w-3.5 h-3.5"></i> Yuklab olish
@@ -533,34 +406,23 @@
                                 <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
                             </label>
                         </div>
-                        <button onclick="confirmResetDefaults()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:underline">
-                            Boshlang'ich namuna so'zlarni tiklash
-                        </button>
+                        <button onclick="confirmResetDefaults()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:underline">Boshlang'ich namuna so'zlarni tiklash</button>
                     </div>
                 </div>
 
-                <!-- Sections List -->
                 <div class="lg:col-span-8">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1">Mavjud bo'limlar ro'yxati</h3>
-                        <p class="text-xs text-slate-500 mb-5">Har bir bo'lim ichidagi so'zlar sonini ko'rishingiz, nomini o'zgartirishingiz yoki ulashishingiz mumkin.</p>
-                        
-                        <div id="sectionsGridContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Populated via JS -->
-                        </div>
+                        <p class="text-xs text-slate-500 mb-5">Har bir bo'lim ichidagi so'zlar sonini ko'rishingiz mumkin.</p>
+                        <div id="sectionsGridContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- VIEW 4: SHARE & CLAIM VIA CODE / LINK ("ULASHISH")        -->
-        <!-- ========================================================= -->
+        <!-- VIEW 4: SHARE & CLAIM -->
         <section id="view-share" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Left Column: Create Share Code / Link with User Limit -->
                 <div class="lg:col-span-5">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                         <div class="flex items-center gap-3 mb-5">
@@ -569,7 +431,7 @@
                             </div>
                             <div>
                                 <h2 class="text-lg font-extrabold text-slate-800">To'plamni ulashish</h2>
-                                <p class="text-xs text-slate-500">O'quvchilar uchun kalit so'z va limit belgilang</p>
+                                <p class="text-xs text-slate-500">O'quvchilar uchun kalit so'z belgilang</p>
                             </div>
                         </div>
 
@@ -578,29 +440,20 @@
                                 <i data-lucide="lock" class="w-4 h-4 text-amber-600"></i>
                                 <span>Ulashish uchun hisobingizga kiring</span>
                             </p>
-                            <p>Kalit so'z yaratish va nechta o'quvchi foydalanganini nazorat qilish uchun tizimga kiring yoki ro'yxatdan o'ting.</p>
-                            <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition">
-                                Kirish / Ro'yxatdan o'tish
-                            </button>
+                            <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition">Kirish</button>
                         </div>
 
                         <form id="createShareForm" onsubmit="handleCreateSharePack(event)" class="space-y-4">
-                            <!-- Pack Title -->
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">To'plam sarlavhasi *</label>
-                                <input type="text" id="sharePackTitle" required placeholder="Masalan: 10-sinf IELTS Sinonimlar"
-                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-semibold">
+                                <input type="text" id="sharePackTitle" required placeholder="Masalan: IELTS Sinonimlar" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-semibold">
                             </div>
 
-                            <!-- Select Sections to Include -->
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Qaysi bo'limlar ulashilsin? *</label>
-                                <div id="shareSectionsChecklist" class="space-y-2 max-h-44 overflow-y-auto p-3 rounded-2xl border border-slate-200 bg-slate-50">
-                                    <!-- Populated via JS -->
-                                </div>
+                                <div id="shareSectionsChecklist" class="space-y-2 max-h-44 overflow-y-auto p-3 rounded-2xl border border-slate-200 bg-slate-50"></div>
                             </div>
 
-                            <!-- Custom Keyword -->
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Kalit so'z (Kod) *</label>
@@ -608,16 +461,11 @@
                                         <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Avto-yaratish
                                     </button>
                                 </div>
-                                <input type="text" id="shareCustomCode" required placeholder="Masalan: USTOZ-01 yoki IELTS26"
-                                    class="w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-indigo-50/40 focus:bg-white focus:border-indigo-500 outline-none text-sm font-extrabold uppercase tracking-wider text-indigo-900">
-                                <p class="text-[11px] text-slate-400 mt-1">O'quvchilar shu kalit so'zni kiritish orqali so'zlarni yuklab oladi.</p>
+                                <input type="text" id="shareCustomCode" required placeholder="Masalan: USTOZ-01" class="w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-indigo-50/40 focus:bg-white focus:border-indigo-500 outline-none text-sm font-extrabold uppercase tracking-wider text-indigo-900">
                             </div>
 
-                            <!-- Max Users Limit -->
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                                    Foydalanishi mumkin bo'lgan odamlar soni (Limit) *
-                                </label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Foydalanish limiti *</label>
                                 <div class="grid grid-cols-4 gap-2 mb-2">
                                     <button type="button" onclick="setShareLimitPreset(1)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">1 kishi</button>
                                     <button type="button" onclick="setShareLimitPreset(15)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">15 kishi</button>
@@ -625,8 +473,7 @@
                                     <button type="button" onclick="setShareLimitPreset(0)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">Cheksiz</button>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" id="shareMaxUsersInput" min="1" max="10000" value="30" placeholder="Odamlar soni"
-                                        class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-bold outline-none focus:border-indigo-500">
+                                    <input type="number" id="shareMaxUsersInput" min="1" max="10000" value="30" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-bold outline-none focus:border-indigo-500">
                                     <label class="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50">
                                         <input type="checkbox" id="shareUnlimitedCheck" onchange="toggleUnlimitedShare(this.checked)" class="rounded text-indigo-600">
                                         <span>Cheksiz</span>
@@ -642,97 +489,61 @@
                     </div>
                 </div>
 
-                <!-- Right Column: My Shared Codes & Student Usage Analytics -->
                 <div class="lg:col-span-7">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <div>
                                 <h3 class="text-lg font-extrabold text-slate-800">Men yaratgan kalit so'zlar</h3>
-                                <p class="text-xs text-slate-500">Har bir kalit so'zdan nechta o'quvchi foydalanganini kuzating va havolani nusxalang.</p>
+                                <p class="text-xs text-slate-500">Foydalanish statistikasi</p>
                             </div>
                             <button onclick="loadMySharedPacks()" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 transition" title="Yangilash">
                                 <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                             </button>
                         </div>
-
-                        <div id="mySharedPacksList" class="space-y-3.5">
-                            <!-- Populated via JS -->
-                        </div>
+                        <div id="mySharedPacksList" class="space-y-3.5"></div>
                     </div>
                 </div>
-
             </div>
         </section>
-
     </main>
 
-    <!-- ========================================================= -->
-    <!-- LOGIN & REGISTRATION MODAL                                -->
-    <!-- ========================================================= -->
+    <!-- AUTH MODAL -->
     <div id="authModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-pop relative">
             <button onclick="closeAuthModal()" class="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-
             <div class="text-center mb-6">
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-teal-500 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
                     <i data-lucide="user-circle-2" class="w-7 h-7"></i>
                 </div>
                 <h3 id="authModalTitle" class="text-xl font-extrabold text-slate-900">Tizimga kirish</h3>
-                <p id="authModalSubtitle" class="text-xs text-slate-500 mt-1">So'zlaringizni bulutda saqlang va o'quvchilarga ulashing</p>
             </div>
-
-            <!-- Mode Switch Tabs -->
             <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-2xl mb-5">
-                <button type="button" id="authTabLogin" onclick="switchAuthMode('login')" class="py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition">
-                    Kirish (Login)
-                </button>
-                <button type="button" id="authTabRegister" onclick="switchAuthMode('register')" class="py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
-                    Ro'yxatdan o'tish
-                </button>
+                <button type="button" id="authTabLogin" onclick="switchAuthMode('login')" class="py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition">Kirish</button>
+                <button type="button" id="authTabRegister" onclick="switchAuthMode('register')" class="py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">Ro'yxatdan o'tish</button>
             </div>
-
             <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
                 <input type="hidden" id="authModeInput" value="login">
-
-                <!-- Full Name (Register only) -->
                 <div id="authNameField" class="hidden">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Ism va familiyangiz *</label>
-                    <input type="text" id="authFullName" placeholder="Masalan: Sardor Karimov"
-                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Ism va familiya *</label>
+                    <input type="text" id="authFullName" placeholder="Sardor Karimov" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Elektron pochta (Email) *</label>
-                    <input type="email" id="authEmail" required placeholder="name@example.com"
-                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Email *</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Parol (kamida 6 ta belgi) *</label>
-                    <input type="password" id="authPassword" required minlength="6" placeholder="••••••••"
-                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Parol *</label>
+                    <input type="password" id="authPassword" required minlength="6" placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
                 </div>
-
                 <div id="authErrorBox" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
-
-                <button type="submit" id="authSubmitBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition">
-                    Kirish
-                </button>
+                <button type="submit" id="authSubmitBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition">Kirish</button>
             </form>
-
-            <div class="mt-4 pt-4 border-t border-slate-100 text-center">
-                <button type="button" onclick="closeAuthModal()" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
-                    Mehmon sifatida davom etish →
-                </button>
-            </div>
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- GAME SUMMARY / RESULTS MODAL                              -->
-    <!-- ========================================================= -->
+    <!-- GAME RESULT MODAL -->
     <div id="gameResultModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-pop max-h-[90vh] flex flex-col">
             <div class="text-center mb-5">
@@ -742,11 +553,9 @@
                 <h3 class="text-2xl font-extrabold text-slate-900">Ajoyib natija!</h3>
                 <p id="resultGameName" class="text-sm text-slate-500 mt-0.5">O'yin yakunlandi</p>
             </div>
-
-            <!-- Stats Row -->
             <div class="grid grid-cols-3 gap-3 mb-5">
                 <div class="bg-indigo-50 rounded-2xl p-3 text-center">
-                    <span class="block text-xs font-semibold text-indigo-600">To'plangan ball</span>
+                    <span class="block text-xs font-semibold text-indigo-600">Ball</span>
                     <span id="resultScore" class="text-xl font-extrabold text-indigo-900">+0</span>
                 </div>
                 <div class="bg-teal-50 rounded-2xl p-3 text-center">
@@ -754,2058 +563,35 @@
                     <span id="resultAccuracy" class="text-xl font-extrabold text-teal-900">100%</span>
                 </div>
                 <div class="bg-amber-50 rounded-2xl p-3 text-center">
-                    <span class="block text-xs font-semibold text-amber-600">Eng uzun seriya</span>
+                    <span class="block text-xs font-semibold text-amber-600">Seriya</span>
                     <span id="resultBestStreak" class="text-xl font-extrabold text-amber-900">0</span>
                 </div>
             </div>
-
-            <!-- Reviewed / Mistakes Words List -->
             <div class="flex-1 overflow-y-auto mb-5 border border-slate-100 rounded-2xl p-3.5 bg-slate-50">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-1.5">
-                    <i data-lucide="book-open-check" class="w-4 h-4 text-indigo-600"></i>
-                    <span>Takrorlangan so'zlar va ma'nolari:</span>
-                </h4>
-                <div id="resultWordsSummary" class="space-y-2 text-sm">
-                    <!-- Populated via JS -->
-                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">Takrorlangan so'zlar:</h4>
+                <div id="resultWordsSummary" class="space-y-2 text-sm"></div>
             </div>
-
             <div class="flex gap-3">
-                <button onclick="closeResultModal(false)" class="flex-1 py-3 px-4 rounded-2xl border border-slate-200 hover:bg-slate-50 font-bold text-sm text-slate-700 transition">
-                    Bosh menyuga
-                </button>
-                <button onclick="closeResultModal(true)" class="flex-1 py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 font-bold text-sm text-white shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
-                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-                    <span>Yana o'ynash</span>
-                </button>
+                <button onclick="closeResultModal(false)" class="flex-1 py-3 px-4 rounded-2xl border border-slate-200 hover:bg-slate-50 font-bold text-sm text-slate-700 transition">Bosh menyuga</button>
+                <button onclick="closeResultModal(true)" class="flex-1 py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 font-bold text-sm text-white shadow-md transition flex items-center justify-center gap-2">Yana o'ynash</button>
             </div>
         </div>
     </div>
 
-    <!-- Custom Modal for Section Rename / Confirmation (Replaces browser prompt/confirm) -->
+    <!-- CUSTOM DIALOG MODAL -->
     <div id="customDialogModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl animate-pop">
             <h3 id="dialogTitle" class="text-lg font-extrabold text-slate-900 mb-2">Sarlavha</h3>
             <p id="dialogMessage" class="text-sm text-slate-600 mb-4">Xabar matni</p>
             <input type="text" id="dialogInput" class="hidden w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium mb-4">
             <div class="flex justify-end gap-2.5">
-                <button id="dialogCancelBtn" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition">
-                    Bekor qilish
-                </button>
-                <button id="dialogConfirmBtn" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition">
-                    Tasdiqlash
-                </button>
+                <button id="dialogCancelBtn" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition">Bekor qilish</button>
+                <button id="dialogConfirmBtn" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition">Tasdiqlash</button>
             </div>
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- APPLICATION LOGIC (FIREBASE + GAMES ENGINE)               -->
-    <!-- ========================================================= -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signInWithCustomToken,
-            signInAnonymously,
-            updateProfile,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import {
-            getFirestore,
-            doc,
-            getDoc,
-            setDoc,
-            updateDoc,
-            deleteDoc,
-            collection,
-            getDocs
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // ==========================================
-        // 0. FIREBASE & HYBRID STORAGE INITIALIZATION
-        // ==========================================
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sinonim-master-default';
-        let firebaseApp = null;
-        let auth = null;
-        let db = null;
-        let isCloudAvailable = false;
-        let currentUser = null; // Logged-in user object { uid, email, displayName }
-        let firebaseAuthUser = null;
-
-        // Local fallback keys for seamless offline / standalone browser usage
-        const LOCAL_USERS_DB_KEY = 'sinonim_master_users_db_v1';
-        const LOCAL_SESSION_KEY = 'sinonim_master_active_user_v1';
-        const LOCAL_SHARED_PACKS_KEY = 'sinonim_master_shared_packs_v1';
-
-        try {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                const firebaseConfig = JSON.parse(__firebase_config);
-                if (firebaseConfig && firebaseConfig.apiKey) {
-                    firebaseApp = initializeApp(firebaseConfig);
-                    auth = getAuth(firebaseApp);
-                    db = getFirestore(firebaseApp);
-                    isCloudAvailable = true;
-                }
-            }
-        } catch (err) {
-            console.warn("Bulutli ulanish topilmadi, mahalliy rejim faollashtirildi.");
-            isCloudAvailable = false;
-        }
-
-        function getLocalUsersDB() {
-            try {
-                return JSON.parse(localStorage.getItem(LOCAL_USERS_DB_KEY) || '{}');
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function saveLocalUsersDB(usersObj) {
-            localStorage.setItem(LOCAL_USERS_DB_KEY, JSON.stringify(usersObj));
-        }
-
-        function getLocalSharedPacksDB() {
-            try {
-                return JSON.parse(localStorage.getItem(LOCAL_SHARED_PACKS_KEY) || '{}');
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function saveLocalSharedPacksDB(packsObj) {
-            localStorage.setItem(LOCAL_SHARED_PACKS_KEY, JSON.stringify(packsObj));
-        }
-        } catch (err) {
-            console.error("Firebase init error:", err);
-        }
-
-        // ==========================================
-        // 1. DEFAULT DATA & STATE MANAGEMENT (MULTI-SYNONYM ARCHITECTURE)
-        // ==========================================
-        const STORAGE_KEY = 'sinonim_master_uz_v2';
-
-        const DEFAULT_DATA = {
-            globalScore: 0,
-            soundEnabled: true,
-            sections: [
-                { id: 'sec-1', name: 'IELTS Akademik', color: 'indigo' },
-                { id: 'sec-2', name: 'Kundalik Sifatlar', color: 'teal' },
-                { id: 'sec-3', name: 'Harakat Fe\'llari', color: 'amber' }
-            ],
-            selectedSectionIds: ['sec-1', 'sec-2', 'sec-3'],
-            // Each entry is a Multi-Synonym Group: { id, sectionId, uzbek, synonyms: [w1, w2, w3, ...] }
-            words: [
-                // IELTS Akademik
-                {
-                    id: 'w-1',
-                    sectionId: 'sec-1',
-                    uzbek: 'Muhim, ahamiyatli, hal qiluvchi',
-                    synonyms: ['Important', 'Crucial', 'Essential', 'Vital', 'Significant']
-                },
-                {
-                    id: 'w-2',
-                    sectionId: 'sec-1',
-                    uzbek: 'Mo\'l-ko\'l, serob, ko\'p',
-                    synonyms: ['Abundant', 'Plentiful', 'Ample', 'Copious']
-                },
-                {
-                    id: 'w-3',
-                    sectionId: 'sec-1',
-                    uzbek: 'Yomonlashmoq, og\'irlashmoq',
-                    synonyms: ['Deteriorate', 'Worsen', 'Decline', 'Degrade']
-                },
-                {
-                    id: 'w-4',
-                    sectionId: 'sec-1',
-                    uzbek: 'Muqarrar, qochib bo\'lmaydigan',
-                    synonyms: ['Inevitable', 'Unavoidable', 'Inescapable']
-                },
-                {
-                    id: 'w-5',
-                    sectionId: 'sec-1',
-                    uzbek: 'Noaniq, tushunarsiz, mavhum',
-                    synonyms: ['Ambiguous', 'Vague', 'Obscure', 'Unclear']
-                },
-
-                // Kundalik Sifatlar
-                {
-                    id: 'w-6',
-                    sectionId: 'sec-2',
-                    uzbek: 'Baxtli, quvnoq, shod',
-                    synonyms: ['Happy', 'Joyful', 'Cheerful', 'Delighted', 'Elated']
-                },
-                {
-                    id: 'w-7',
-                    sectionId: 'sec-2',
-                    uzbek: 'Ulkan, juda katta, bahaybat',
-                    synonyms: ['Big', 'Huge', 'Enormous', 'Gigantic', 'Immense']
-                },
-                {
-                    id: 'w-8',
-                    sectionId: 'sec-2',
-                    uzbek: 'Mehnatsevar, tirishqoq, g\'ayratli',
-                    synonyms: ['Diligent', 'Hardworking', 'Industrious', 'Assiduous']
-                },
-                {
-                    id: 'w-9',
-                    sectionId: 'sec-2',
-                    uzbek: 'Ehtiyotkor, sinchkov, hushyor',
-                    synonyms: ['Cautious', 'Careful', 'Prudent', 'Wary']
-                },
-                {
-                    id: 'w-10',
-                    sectionId: 'sec-2',
-                    uzbek: 'Qaysar, o\'jar, bir so\'zli',
-                    synonyms: ['Stubborn', 'Obstinate', 'Headstrong', 'Inflexible']
-                },
-
-                // Harakat Fe'llari
-                {
-                    id: 'w-11',
-                    sectionId: 'sec-3',
-                    uzbek: 'Tushunmoq, anglamoq, idrok etmoq',
-                    synonyms: ['Understand', 'Comprehend', 'Grasp', 'Perceive']
-                },
-                {
-                    id: 'w-12',
-                    sectionId: 'sec-3',
-                    uzbek: 'Yordam bermoq, ko\'maklashmoq',
-                    synonyms: ['Help', 'Assist', 'Facilitate', 'Aid', 'Support']
-                },
-                {
-                    id: 'w-13',
-                    sectionId: 'sec-3',
-                    uzbek: 'Kechiktirmoq, keyinga qoldirmoq',
-                    synonyms: ['Postpone', 'Delay', 'Defer', 'Adjourn']
-                },
-                {
-                    id: 'w-14',
-                    sectionId: 'sec-3',
-                    uzbek: 'G\'oyib bo\'lmoq, yo\'qolmoq',
-                    synonyms: ['Vanish', 'Disappear', 'Fade', 'Evaporate']
-                }
-            ]
-        };
-
-        let appState = loadState();
-        let selectedNewSectionColor = 'indigo';
-
-        // Active Game Session State
-        let currentGame = {
-            id: null,
-            score: 0,
-            streak: 0,
-            bestStreak: 0,
-            correctCount: 0,
-            totalAttempts: 0,
-            reviewedWords: new Map(), // groupId -> { wordObj, hadMistake }
-            timerInterval: null
-        };
-
-        // Migrate any v1 two-word data seamlessly if present
-        function normalizeWordGroup(item) {
-            if (Array.isArray(item.synonyms) && item.synonyms.length >= 2) {
-                return item;
-            }
-            const syns = [];
-            if (item.word1) syns.push(item.word1);
-            if (item.word2) syns.push(item.word2);
-            return {
-                id: item.id || ('w-' + Date.now() + Math.random()),
-                sectionId: item.sectionId,
-                uzbek: item.uzbek || '',
-                synonyms: syns
-            };
-        }
-
-        function loadState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sinonim_master_uz_v1');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.sections && parsed.words) {
-                        parsed.words = parsed.words.map(normalizeWordGroup);
-                        return parsed;
-                    }
-                }
-            } catch (e) {
-                console.error('LocalStorage o\'qishda xatolik:', e);
-            }
-            return JSON.parse(JSON.stringify(DEFAULT_DATA));
-        }
-
-        function saveState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-            } catch (e) {
-                console.error('LocalStorage saqlashda xatolik:', e);
-            }
-            updateHeaderStats();
-            syncUserProfileToCloud();
-        }
-
-        async function syncUserProfileToCloud() {
-            if (!currentUser) return;
-            const payload = {
-                globalScore: appState.globalScore || 0,
-                sections: appState.sections,
-                selectedSectionIds: appState.selectedSectionIds,
-                words: appState.words,
-                updatedAt: Date.now()
-            };
-
-            if (isCloudAvailable && db) {
-                try {
-                    const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'vocabulary');
-                    await setDoc(userDocRef, payload, { merge: true });
-                } catch (e) {
-                    console.error('Bulutga saqlashda xatolik:', e);
-                }
-            } else {
-                // Save to local user account record
-                const usersDb = getLocalUsersDB();
-                const emailKey = currentUser.email.toLowerCase();
-                if (usersDb[emailKey]) {
-                    usersDb[emailKey].vocabulary = payload;
-                    saveLocalUsersDB(usersDb);
-                }
-            }
-        }
-
-        async function loadUserProfileFromCloud(uid, email = null) {
-            if (isCloudAvailable && db && uid) {
-                try {
-                    const userDocRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'vocabulary');
-                    const snap = await getDoc(userDocRef);
-                    if (snap.exists()) {
-                        const cloudData = snap.data();
-                        if (Array.isArray(cloudData.sections) && Array.isArray(cloudData.words)) {
-                            appState.sections = cloudData.sections;
-                            appState.words = cloudData.words.map(normalizeWordGroup);
-                            appState.selectedSectionIds = cloudData.selectedSectionIds || cloudData.sections.map(s => s.id);
-                            appState.globalScore = cloudData.globalScore || appState.globalScore;
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-                            refreshAllViews();
-                            showToast('Shaxsiy bazangiz yuklandi!', 'info');
-                        }
-                    } else {
-                        await syncUserProfileToCloud();
-                    }
-                } catch (e) {
-                    console.error('Yuklashda xatolik:', e);
-                }
-            } else if (email) {
-                const usersDb = getLocalUsersDB();
-                const record = usersDb[email.toLowerCase()];
-                if (record && record.vocabulary && Array.isArray(record.vocabulary.sections)) {
-                    appState.sections = record.vocabulary.sections;
-                    appState.words = record.vocabulary.words.map(normalizeWordGroup);
-                    appState.selectedSectionIds = record.vocabulary.selectedSectionIds || record.sections.map(s => s.id);
-                    appState.globalScore = record.vocabulary.globalScore || 0;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-                    refreshAllViews();
-                    showToast('Shaxsiy kabinet ma\'lumotlari yuklandi!', 'info');
-                } else {
-                    await syncUserProfileToCloud();
-                }
-            }
-        }
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const mode = document.getElementById('authModeInput').value;
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value;
-            const fullName = document.getElementById('authFullName').value.trim();
-            const errorBox = document.getElementById('authErrorBox');
-            const submitBtn = document.getElementById('authSubmitBtn');
-
-            errorBox.classList.add('hidden');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Kuting...';
-
-            try {
-                if (isCloudAvailable && auth) {
-                    if (mode === 'register') {
-                        const cred = await createUserWithEmailAndPassword(auth, email, password);
-                        if (fullName) {
-                            await updateProfile(cred.user, { displayName: fullName });
-                        }
-                        showToast(`Xush kelibsiz, ${fullName || email}!`);
-                    } else {
-                        await signInWithEmailAndPassword(auth, email, password);
-                        showToast('Tizimga muvaffaqiyatli kirdingiz!');
-                    }
-                } else {
-                    // Local / Standalone Authentication Engine
-                    const usersDb = getLocalUsersDB();
-                    const emailKey = email.toLowerCase();
-
-                    if (mode === 'register') {
-                        if (usersDb[emailKey]) {
-                            throw { customMessage: 'Bu elektron pochta allaqachon ro\'yxatdan o\'tgan.' };
-                        }
-                        if (!fullName) {
-                            throw { customMessage: 'Iltimos, ism va familiyangizni kiriting.' };
-                        }
-                        const newUid = 'user-' + Date.now();
-                        usersDb[emailKey] = {
-                            uid: newUid,
-                            email: email,
-                            displayName: fullName,
-                            password: btoa(encodeURIComponent(password)),
-                            vocabulary: null
-                        };
-                        saveLocalUsersDB(usersDb);
-
-                        currentUser = { uid: newUid, email: email, displayName: fullName };
-                        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(currentUser));
-                        await syncUserProfileToCloud();
-                        updateAuthHeaderUI();
-                        showToast(`Xush kelibsiz, ${fullName}!`);
-                    } else {
-                        const existingUser = usersDb[emailKey];
-                        if (!existingUser || existingUser.password !== btoa(encodeURIComponent(password))) {
-                            throw { customMessage: 'Email yoki parol noto\'g\'ri.' };
-                        }
-                        currentUser = {
-                            uid: existingUser.uid,
-                            email: existingUser.email,
-                            displayName: existingUser.displayName
-                        };
-                        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(currentUser));
-                        updateAuthHeaderUI();
-                        await loadUserProfileFromCloud(currentUser.uid, currentUser.email);
-                        loadMySharedPacks();
-                        showToast(`Xush kelibsiz, ${currentUser.displayName}!`);
-                    }
-                }
-                closeAuthModal();
-            } catch (err) {
-                let msg = err.customMessage || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
-                if (err.code === 'auth/email-already-in-use') msg = 'Bu elektron pochta allaqachon ro\'yxatdan o\'tgan.';
-                else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') msg = 'Email yoki parol noto\'g\'ri.';
-                else if (err.code === 'auth/weak-password') msg = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.';
-                errorBox.textContent = msg;
-                errorBox.classList.remove('hidden');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = mode === 'register' ? 'Hisob yaratish' : 'Kirish';
-            }
-        }
-
-        async function handleLogout() {
-            try {
-                if (isCloudAvailable && auth) {
-                    await signOut(auth);
-                    await signInAnonymously(auth);
-                } else {
-                    localStorage.removeItem(LOCAL_SESSION_KEY);
-                    currentUser = null;
-                    updateAuthHeaderUI();
-                }
-                showToast('Hisobdan chiqdingiz', 'info');
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        function updateAuthHeaderUI() {
-            const container = document.getElementById('authHeaderContainer');
-            const shareNotice = document.getElementById('shareAuthNotice');
-            const shareForm = document.getElementById('createShareForm');
-
-            if (currentUser) {
-                const name = currentUser.displayName || currentUser.email.split('@')[0];
-                const statusText = isCloudAvailable ? 'Bulutga ulangan' : 'Shaxsiy kabinet';
-                container.innerHTML = `
-                    <div class="flex items-center gap-2 bg-slate-100 pl-3 pr-1.5 py-1 rounded-2xl border border-slate-200">
-                        <div class="text-right">
-                            <span class="block text-xs font-extrabold text-slate-800 leading-tight">${escapeHTML(name)}</span>
-                            <span class="block text-[10px] text-emerald-600 font-semibold">${statusText}</span>
-                        </div>
-                        <button onclick="handleLogout()" title="Hisobdan chiqish"
-                            class="p-2 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 transition">
-                            <i data-lucide="log-out" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `;
-                if (shareNotice) shareNotice.classList.add('hidden');
-                if (shareForm) shareForm.classList.remove('opacity-50', 'pointer-events-none');
-            } else {
-                container.innerHTML = `
-                    <button onclick="openAuthModal('login')" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
-                        <i data-lucide="user-check" class="w-4 h-4"></i>
-                        <span>Kirish / Ro'yxatdan o'tish</span>
-                    </button>
-                `;
-                if (shareNotice) shareNotice.classList.remove('hidden');
-                if (shareForm) shareForm.classList.add('opacity-50', 'pointer-events-none');
-            }
-            lucide.createIcons();
-        }
-
-        function deleteWord(wordId) {
-            appState.words = appState.words.filter(w => w.id !== wordId);
-            saveState();
-            renderWordsList();
-            showToast('Guruh o\'chirildi', 'info');
-        }
-
-        function renderWordsList() {
-            const container = document.getElementById('wordsListContainer');
-            const query = document.getElementById('wordSearchInput').value.toLowerCase().trim();
-            const secFilter = document.getElementById('filterWordsBySection').value;
-
-            const filtered = appState.words.filter(w => {
-                const matchesSec = secFilter === 'all' || w.sectionId === secFilter;
-                const matchesQuery = !query ||
-                    w.uzbek.toLowerCase().includes(query) ||
-                    w.synonyms.some(s => s.toLowerCase().includes(query));
-                return matchesSec && matchesQuery;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 px-4">
-                        <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-                            <i data-lucide="inbox" class="w-7 h-7"></i>
-                        </div>
-                        <p class="text-sm font-bold text-slate-700">Sinonim guruhlari topilmadi</p>
-                        <p class="text-xs text-slate-500 mt-1">Chap tarafdagi shakl orqali yangi sinonimlar guruhini qo'shing.</p>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            container.innerHTML = filtered.map(w => {
-                const sec = appState.sections.find(s => s.id === w.sectionId) || { name: 'Bo\'lim', color: 'indigo' };
-                const badgeStyle = COLOR_BADGES[sec.color] || COLOR_BADGES.indigo;
-
-                const synonymPills = w.synonyms.map((syn, idx) => `
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-xs sm:text-sm font-bold ${
-                        idx === 0
-                            ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'bg-indigo-50 text-indigo-800 border border-indigo-200/80'
-                    }">
-                        ${escapeHTML(syn)}
-                    </span>
-                `).join('');
-
-                return `
-                    <div class="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/40 hover:bg-white hover:border-indigo-200 transition flex flex-col gap-2.5">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="inline-flex items-center gap-1.5 text-sm font-extrabold text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-xl">
-                                    <i data-lucide="languages" class="w-3.5 h-3.5 text-teal-600"></i>
-                                    ${escapeHTML(w.uzbek)}
-                                </span>
-                                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${badgeStyle}">${escapeHTML(sec.name)}</span>
-                                <span class="text-[11px] font-bold text-slate-400">${w.synonyms.length} ta sinonim</span>
-                            </div>
-                            <div class="flex items-center gap-1 shrink-0">
-                                <button onclick="editWord('${w.id}')" class="p-1.5 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition" title="Tahrirlash / Sinonim qo'shish">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="deleteWord('${w.id}')" class="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition" title="O'chirish">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-1.5 pt-0.5">
-                            ${synonymPills}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            lucide.createIcons();
-        }
-
-        // ==========================================
-        // 6. GAME SECTION FILTERING & POOL BUILDER
-        // ==========================================
-        function renderGameSectionFilters() {
-            const container = document.getElementById('gameSectionFilters');
-            container.innerHTML = appState.sections.map(sec => {
-                const count = appState.words.filter(w => w.sectionId === sec.id).length;
-                const isSelected = appState.selectedSectionIds.includes(sec.id);
-                const dotColor = COLOR_DOTS[sec.color] || 'bg-indigo-500';
-
-                return `
-                    <button onclick="toggleGameSection('${sec.id}')"
-                        class="flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs sm:text-sm font-bold transition-all select-none ${
-                            isSelected
-                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-200'
-                                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                        }">
-                        <span class="w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white' : dotColor}"></span>
-                        <span>${escapeHTML(sec.name)}</span>
-                        <span class="px-1.5 py-0.5 rounded-lg text-[11px] ${isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-200 text-slate-700'}">
-                            ${count}
-                        </span>
-                    </button>
-                `;
-            }).join('');
-
-            const pool = getActiveWordPool();
-            const totalSynonyms = pool.reduce((sum, g) => sum + g.synonyms.length, 0);
-            document.getElementById('selectedWordsCount').textContent = `${pool.length} ta guruh (${totalSynonyms} ta sinonim)`;
-            const warnEl = document.getElementById('minWordsWarning');
-            if (pool.length < 4) {
-                warnEl.classList.remove('hidden');
-            } else {
-                warnEl.classList.add('hidden');
-            }
-        }
-
-        function toggleGameSection(secId) {
-            if (appState.selectedSectionIds.includes(secId)) {
-                appState.selectedSectionIds = appState.selectedSectionIds.filter(id => id !== secId);
-            } else {
-                appState.selectedSectionIds.push(secId);
-            }
-            saveState();
-            renderGameSectionFilters();
-        }
-
-        function selectAllSections(selectAll) {
-            appState.selectedSectionIds = selectAll ? appState.sections.map(s => s.id) : [];
-            saveState();
-            renderGameSectionFilters();
-        }
-
-        function getActiveWordPool() {
-            return appState.words.filter(w => appState.selectedSectionIds.includes(w.sectionId));
-        }
-
-        // ==========================================
-        // 7. CORE GAME ENGINE & HELPERS
-        // ==========================================
-        const GAME_META = {
-            1: { title: '1-o\'yin: Juftlikni Toping', subtitle: 'Guruh ichidagi sinonimlarni o\'zaro yoki o\'zbekcha ma\'nosi bilan bog\'lang' },
-            2: { title: '2-o\'yin: Tezkor Viktorina & Ortiqcha So\'z', subtitle: 'Sinonim, tarjima va qatorga kirmaydigan ortiqcha so\'zni toping' },
-            3: { title: '3-o\'yin: So\'z Yig\'uvchi', subtitle: 'O\'zbekcha ma\'no va ma\'lum sinonimlar asosida boshqa sinonimni yig\'ing' },
-            4: { title: '4-o\'yin: To\'g\'ri yoki Noto\'g\'ri', subtitle: 'Ikkita so\'z bir sinonim guruhiga tegishli ekanligini tezda aniqlang' },
-            5: { title: '5-o\'yin: Xotira Matritsasi', subtitle: 'Yopiq katakchalar ortidagi sinonim juftliklarni toping' }
-        };
-
-        function startGame(gameId) {
-            const pool = getActiveWordPool();
-            if (pool.length < 4) {
-                showToast('O\'ynash uchun kamida 4 ta sinonim guruhi bo\'lgan bo\'limni tanlang!', 'warning');
-                return;
-            }
-
-            if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
-
-            currentGame = {
-                id: gameId,
-                score: 0,
-                streak: 0,
-                bestStreak: 0,
-                correctCount: 0,
-                totalAttempts: 0,
-                reviewedWords: new Map(),
-                timerInterval: null
-            };
-
-            updateArenaHUD();
-            document.getElementById('arenaGameTitle').textContent = GAME_META[gameId].title;
-            document.getElementById('arenaGameSubtitle').textContent = GAME_META[gameId].subtitle;
-
-            document.getElementById('gamesMenuGrid').classList.add('hidden');
-            document.getElementById('activeGameArena').classList.remove('hidden');
-
-            if (gameId === 1) initGame1_Matching();
-            if (gameId === 2) initGame2_Quiz();
-            if (gameId === 3) initGame3_Scramble();
-            if (gameId === 4) initGame4_TrueFalse();
-            if (gameId === 5) initGame5_Memory();
-
-            lucide.createIcons();
-        }
-
-        function exitGame() {
-            if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
-            document.getElementById('activeGameArena').classList.add('hidden');
-            document.getElementById('gamesMenuGrid').classList.remove('hidden');
-            renderGameSectionFilters();
-        }
-
-        function updateArenaHUD() {
-            document.getElementById('arenaScore').textContent = currentGame.score;
-            document.getElementById('arenaStreak').textContent = currentGame.streak;
-        }
-
-        function recordAnswer(wordObj, isCorrect, basePoints = 10) {
-            currentGame.totalAttempts++;
-            if (!currentGame.reviewedWords.has(wordObj.id)) {
-                currentGame.reviewedWords.set(wordObj.id, { word: wordObj, hadMistake: false });
-            }
-
-            if (isCorrect) {
-                playSound('correct');
-                currentGame.correctCount++;
-                currentGame.streak++;
-                if (currentGame.streak > currentGame.bestStreak) {
-                    currentGame.bestStreak = currentGame.streak;
-                }
-                const bonus = Math.min(currentGame.streak * 2, 15);
-                currentGame.score += (basePoints + bonus);
-            } else {
-                playSound('wrong');
-                currentGame.streak = 0;
-                currentGame.reviewedWords.get(wordObj.id).hadMistake = true;
-            }
-            updateArenaHUD();
-        }
-
-        function finishGameSession() {
-            if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
-            playSound('win');
-
-            appState.globalScore += currentGame.score;
-            saveState();
-
-            const accuracy = currentGame.totalAttempts > 0
-                ? Math.round((currentGame.correctCount / currentGame.totalAttempts) * 100)
-                : 100;
-
-            document.getElementById('resultGameName').textContent = GAME_META[currentGame.id].title;
-            document.getElementById('resultScore').textContent = `+${currentGame.score}`;
-            document.getElementById('resultAccuracy').textContent = `${accuracy}%`;
-            document.getElementById('resultBestStreak').textContent = currentGame.bestStreak;
-
-            const summaryContainer = document.getElementById('resultWordsSummary');
-            const items = Array.from(currentGame.reviewedWords.values());
-            summaryContainer.innerHTML = items.map(item => `
-                <div class="p-3 rounded-xl bg-white border ${item.hadMistake ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'} flex items-center justify-between gap-2">
-                    <div>
-                        <div class="font-bold text-indigo-700 text-xs sm:text-sm">
-                            ${item.word.synonyms.map(s => escapeHTML(s)).join(' = ')}
-                        </div>
-                        <div class="text-xs text-teal-700 font-medium mt-0.5">${escapeHTML(item.word.uzbek)}</div>
-                    </div>
-                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg shrink-0 ${item.hadMistake ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
-                        ${item.hadMistake ? 'Takrorlang' : 'A\'lo'}
-                    </span>
-                </div>
-            `).join('');
-
-            document.getElementById('gameResultModal').classList.remove('hidden');
-            lucide.createIcons();
-        }
-
-        function closeResultModal(playAgain) {
-            document.getElementById('gameResultModal').classList.add('hidden');
-            if (playAgain && currentGame.id) {
-                startGame(currentGame.id);
-            } else {
-                exitGame();
-            }
-        }
-
-        // ==========================================
-        // GAME 1: JUFTLIKNI TOPING (MULTI-SYNONYM MATCHING)
-        // ==========================================
-        let g1Mode = 'mixed'; // 'synonym', 'uzbek', 'mixed'
-        let g1SelectedLeft = null;
-        let g1SelectedRight = null;
-        let g1MatchedCount = 0;
-        let g1RoundWords = [];
-
-        function pickTwoDistinctSynonyms(group) {
-            const shuffled = shuffleArray([...group.synonyms]);
-            return [shuffled[0], shuffled[1] || shuffled[0]];
-        }
-
-        function initGame1_Matching(mode = g1Mode) {
-            g1Mode = mode;
-            const pool = shuffleArray([...getActiveWordPool()]);
-            g1RoundWords = pool.slice(0, Math.min(5, pool.length));
-            g1SelectedLeft = null;
-            g1SelectedRight = null;
-            g1MatchedCount = 0;
-
-            const leftCards = [];
-            const rightCards = [];
-
-            g1RoundWords.forEach((w, index) => {
-                // Dynamically pick 2 random synonyms from the group's entire list!
-                const [synA, synB] = pickTwoDistinctSynonyms(w);
-
-                leftCards.push({
-                    id: w.id,
-                    text: synA,
-                    sub: 'Inglizcha so\'z',
-                    wordObj: w
-                });
-
-                let showUzbek = false;
-                if (g1Mode === 'uzbek') showUzbek = true;
-                else if (g1Mode === 'mixed') showUzbek = (index % 2 === 1);
-
-                rightCards.push({
-                    id: w.id,
-                    text: showUzbek ? w.uzbek : synB,
-                    sub: showUzbek ? 'O\'zbekcha ma\'nosi' : 'Sinonim so\'z',
-                    isUzbek: showUzbek,
-                    wordObj: w
-                });
-            });
-
-            const shuffledLeft = shuffleArray(leftCards);
-            const shuffledRight = shuffleArray(rightCards);
-
-            const board = document.getElementById('gameBoardContent');
-            board.innerHTML = `
-                <div class="max-w-3xl mx-auto w-full space-y-6">
-                    <!-- Mode Switcher -->
-                    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-2 rounded-2xl">
-                        <span class="text-xs font-bold text-slate-600 px-2">Moslashtirish turi:</span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button onclick="initGame1_Matching('mixed')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${g1Mode === 'mixed' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'}">
-                                Aralash (Sinonim + O'zbekcha)
-                            </button>
-                            <button onclick="initGame1_Matching('synonym')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${g1Mode === 'synonym' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'}">
-                                Sinonim ↔ Sinonim
-                            </button>
-                            <button onclick="initGame1_Matching('uzbek')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${g1Mode === 'uzbek' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'}">
-                                Sinonim ↔ O'zbekcha
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Matching Columns -->
-                    <div class="grid grid-cols-2 gap-4 sm:gap-6">
-                        <div class="space-y-3" id="g1LeftCol">
-                            ${shuffledLeft.map(item => `
-                                <button data-side="left" data-id="${item.id}" onclick="handleG1Select(this, 'left', '${item.id}')"
-                                    class="g1-card w-full p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 text-left transition-all shadow-sm">
-                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">${item.sub}</span>
-                                    <span class="block text-sm sm:text-base font-extrabold text-slate-800 mt-0.5">${escapeHTML(item.text)}</span>
-                                </button>
-                            `).join('')}
-                        </div>
-
-                        <div class="space-y-3" id="g1RightCol">
-                            ${shuffledRight.map(item => `
-                                <button data-side="right" data-id="${item.id}" onclick="handleG1Select(this, 'right', '${item.id}')"
-                                    class="g1-card w-full p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-teal-400 text-left transition-all shadow-sm">
-                                    <span class="block text-[10px] font-bold uppercase tracking-wider ${item.isUzbek ? 'text-teal-600' : 'text-indigo-500'}">${item.sub}</span>
-                                    <span class="block text-sm sm:text-base font-extrabold text-slate-800 mt-0.5">${escapeHTML(item.text)}</span>
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <!-- Instant Full Group Banner upon match -->
-                    <div id="g1FeedbackBanner" class="min-h-[54px] rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-600 flex items-center justify-center">
-                        Chap ustundan bir so'zni, o'ng ustundan esa uning mos juftini tanlang.
-                    </div>
-                </div>
-            `;
-        }
-
-        function handleG1Select(btnEl, side, id) {
-            if (btnEl.disabled) return;
-
-            document.querySelectorAll(`.g1-card[data-side="${side}"]`).forEach(el => {
-                if (!el.disabled) {
-                    el.classList.remove('border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-200');
-                }
-            });
-
-            btnEl.classList.add('border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-200');
-
-            if (side === 'left') g1SelectedLeft = { el: btnEl, id };
-            if (side === 'right') g1SelectedRight = { el: btnEl, id };
-
-            if (g1SelectedLeft && g1SelectedRight) {
-                const wordObj = g1RoundWords.find(w => w.id === g1SelectedLeft.id);
-                const isMatch = g1SelectedLeft.id === g1SelectedRight.id;
-                const banner = document.getElementById('g1FeedbackBanner');
-
-                if (isMatch) {
-                    recordAnswer(wordObj, true, 12);
-                    [g1SelectedLeft.el, g1SelectedRight.el].forEach(el => {
-                        el.disabled = true;
-                        el.classList.remove('border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-200');
-                        el.classList.add('border-emerald-400', 'bg-emerald-50', 'text-emerald-800', 'opacity-70');
-                    });
-
-                    const allSynsText = wordObj.synonyms.map(s => escapeHTML(s)).join(' = ');
-                    banner.className = 'min-h-[54px] rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-center text-xs sm:text-sm font-bold text-emerald-900 animate-pop';
-                    banner.innerHTML = `To'g'ri! <span class="text-indigo-700">${allSynsText}</span> — Ma'nosi: <em>${escapeHTML(wordObj.uzbek)}</em>`;
-
-                    g1MatchedCount++;
-                    g1SelectedLeft = null;
-                    g1SelectedRight = null;
-
-                    if (g1MatchedCount === g1RoundWords.length) {
-                        setTimeout(() => finishGameSession(), 900);
-                    }
-                } else {
-                    recordAnswer(wordObj, false);
-                    const lEl = g1SelectedLeft.el;
-                    const rEl = g1SelectedRight.el;
-                    lEl.classList.add('animate-shake', 'border-rose-500', 'bg-rose-50');
-                    rEl.classList.add('animate-shake', 'border-rose-500', 'bg-rose-50');
-
-                    banner.className = 'min-h-[54px] rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-center text-sm font-bold text-rose-700';
-                    banner.textContent = 'Mos kelmadi! Qaytadan urinib ko\'ring.';
-
-                    g1SelectedLeft = null;
-                    g1SelectedRight = null;
-
-                    setTimeout(() => {
-                        [lEl, rEl].forEach(el => {
-                            el.classList.remove('animate-shake', 'border-rose-500', 'bg-rose-50', 'border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-200');
-                        });
-                    }, 450);
-                }
-            }
-        }
-
-        // ==========================================
-        // GAME 2: TEZKOR VIKTORINA + "ORTIQCHA SO'ZNI TOPING"
-        // ==========================================
-        let g2Questions = [];
-        let g2Index = 0;
-
-        function initGame2_Quiz() {
-            const pool = getActiveWordPool();
-            const shuffled = shuffleArray([...pool]);
-            const count = Math.min(8, shuffled.length);
-            g2Questions = [];
-            g2Index = 0;
-
-            for (let i = 0; i < count; i++) {
-                const target = shuffled[i];
-                const otherGroups = shuffleArray(pool.filter(w => w.id !== target.id));
-                const distractors = otherGroups.slice(0, 3);
-
-                // Check if target has >= 3 synonyms so we can ask "Odd One Out" (Ortiqcha so'zni toping)!
-                const canDoOddOneOut = target.synonyms.length >= 3 && distractors.length >= 1;
-                const qType = canDoOddOneOut ? (i % 3) : (i % 2);
-
-                let promptBadge = '';
-                let promptMain = '';
-                let promptHint = '';
-                let correctAnswer = '';
-                let options = [];
-
-                if (qType === 0) {
-                    // Pick a valid synonym from 4 choices (none of the distractors come from target group!)
-                    const [clueSyn, answerSyn] = pickTwoDistinctSynonyms(target);
-                    promptBadge = 'Sinonimini toping';
-                    promptMain = clueSyn;
-                    promptHint = `O'zbekcha ma'nosi: ${target.uzbek}`;
-                    correctAnswer = answerSyn;
-                    const wrongOpts = distractors.map(d => d.synonyms[Math.floor(Math.random() * d.synonyms.length)]);
-                    options = shuffleArray([correctAnswer, ...wrongOpts]);
-                } else if (qType === 1) {
-                    // Pick Uzbek translation given 2-3 synonyms from the group
-                    const shownSyns = shuffleArray([...target.synonyms]).slice(0, Math.min(3, target.synonyms.length)).join(' / ');
-                    promptBadge = 'O\'zbekcha tarjimasini toping';
-                    promptMain = shownSyns;
-                    promptHint = 'Ushbu sinonimlar guruhi nimani anglatadi?';
-                    correctAnswer = target.uzbek;
-                    options = shuffleArray([target.uzbek, ...distractors.map(d => d.uzbek)]);
-                } else {
-                    // QType 2: ODD ONE OUT ("Ortiqcha so'zni toping") - 3 synonyms from target + 1 intruder!
-                    const threeSame = shuffleArray([...target.synonyms]).slice(0, 3);
-                    const intruderGroup = distractors[0];
-                    const intruderWord = intruderGroup.synonyms[Math.floor(Math.random() * intruderGroup.synonyms.length)];
-
-                    promptBadge = 'Ortiqcha so\'zni toping!';
-                    promptMain = `"${target.uzbek}" ma'nosiga KIRMAYDIGAN so'z qaysi?`;
-                    promptHint = '3 ta so\'z o\'zaro sinonim, 1 tasi esa begona!';
-                    correctAnswer = intruderWord;
-                    options = shuffleArray([...threeSame, intruderWord]);
-                }
-
-                g2Questions.push({ target, promptBadge, promptMain, promptHint, correctAnswer, options });
-            }
-
-            renderG2Question();
-        }
-
-        function renderG2Question() {
-            if (g2Index >= g2Questions.length) {
-                finishGameSession();
-                return;
-            }
-
-            const q = g2Questions[g2Index];
-            const progressPct = Math.round(((g2Index) / g2Questions.length) * 100);
-            const board = document.getElementById('gameBoardContent');
-
-            board.innerHTML = `
-                <div class="max-w-2xl mx-auto w-full space-y-6 animate-pop">
-                    <!-- Progress -->
-                    <div class="flex items-center justify-between text-xs font-bold text-slate-500">
-                        <span>Savol ${g2Index + 1} / ${g2Questions.length}</span>
-                        <span>${progressPct}% bajarildi</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-teal-500 transition-all duration-300" style="width: ${progressPct}%"></div>
-                    </div>
-
-                    <!-- Question Card -->
-                    <div class="bg-gradient-to-br from-slate-50 to-indigo-50/40 border border-slate-200 rounded-3xl p-6 sm:p-8 text-center">
-                        <span class="inline-block px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-extrabold uppercase tracking-wider mb-3">
-                            ${q.promptBadge}
-                        </span>
-                        <h4 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">${escapeHTML(q.promptMain)}</h4>
-                        <p class="text-sm text-slate-500 font-medium">${escapeHTML(q.promptHint)}</p>
-                    </div>
-
-                    <!-- 4 Options -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        ${q.options.map((opt, idx) => `
-                            <button onclick="handleG2Answer(this, '${escapeAttr(opt)}')"
-                                class="g2-opt-btn p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-teal-500 hover:bg-teal-50/30 text-left font-bold text-slate-800 text-base transition flex items-center gap-3">
-                                <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-extrabold shrink-0">
-                                    ${['A', 'B', 'C', 'D'][idx]}
-                                </span>
-                                <span>${escapeHTML(opt)}</span>
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function handleG2Answer(btnEl, selectedOpt) {
-            const q = g2Questions[g2Index];
-            const isCorrect = selectedOpt === q.correctAnswer;
-            recordAnswer(q.target, isCorrect, 15);
-
-            document.querySelectorAll('.g2-opt-btn').forEach(btn => {
-                btn.disabled = true;
-                const btnText = btn.querySelector('span:last-child').textContent;
-                if (btnText === q.correctAnswer) {
-                    btn.classList.remove('border-slate-200');
-                    btn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
-                }
-            });
-
-            if (!isCorrect) {
-                btnEl.classList.remove('border-slate-200');
-                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900', 'animate-shake');
-            }
-
-            setTimeout(() => {
-                g2Index++;
-                renderG2Question();
-            }, 950);
-        }
-
-        // ==========================================
-        // GAME 3: SO'Z YIG'UVCHI (MULTI-SYNONYM CLUES + SCRAMBLE)
-        // ==========================================
-        let g3Words = [];
-        let g3Index = 0;
-        let g3TargetWord = '';
-        let g3CurrentLetters = [];
-        let g3PoolLetters = [];
-
-        function initGame3_Scramble() {
-            const pool = shuffleArray([...getActiveWordPool()]);
-            g3Words = pool.slice(0, Math.min(6, pool.length));
-            g3Index = 0;
-            setupG3Round();
-        }
-
-        function setupG3Round() {
-            if (g3Index >= g3Words.length) {
-                finishGameSession();
-                return;
-            }
-
-            const item = g3Words[g3Index];
-            const shuffledSyns = shuffleArray([...item.synonyms]);
-            // Pick 1 synonym to scramble, and show ALL OTHER synonyms in the group as clues!
-            const targetSyn = shuffledSyns[0];
-            const clueSyns = shuffledSyns.slice(1);
-
-            g3TargetWord = targetSyn.toUpperCase();
-
-            const letters = g3TargetWord.split('').map((char, idx) => ({ id: idx, char, used: false }));
-            g3PoolLetters = shuffleArray([...letters]);
-            g3CurrentLetters = [];
-
-            const cluePillsHTML = clueSyns.map(s =>
-                `<span class="px-3 py-1 rounded-xl bg-white border border-amber-200 font-extrabold text-indigo-700">${escapeHTML(s)}</span>`
-            ).join('');
-
-            const board = document.getElementById('gameBoardContent');
-            board.innerHTML = `
-                <div class="max-w-2xl mx-auto w-full space-y-6 text-center animate-pop">
-                    <div class="flex items-center justify-between text-xs font-bold text-slate-500">
-                        <span>So'z ${g3Index + 1} / ${g3Words.length}</span>
-                        <button onclick="useG3Hint()" class="px-3 py-1 rounded-xl bg-amber-100 text-amber-800 hover:bg-amber-200 transition flex items-center gap-1">
-                            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Yordam (1 harf)
-                        </button>
-                    </div>
-
-                    <!-- Clues Box (Uzbek Meaning + All Other Known Synonyms) -->
-                    <div class="bg-amber-50/70 border border-amber-200 rounded-3xl p-6 space-y-3">
-                        <div>
-                            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-700">O'zbekcha tarjimasi:</span>
-                            <h4 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">"${escapeHTML(item.uzbek)}"</h4>
-                        </div>
-                        <div class="pt-1 flex flex-wrap items-center justify-center gap-2 text-sm text-slate-600">
-                            <span>Ma'lum sinonimlar:</span>
-                            ${cluePillsHTML}
-                        </div>
-                    </div>
-
-                    <!-- Answer Slots -->
-                    <div id="g3SlotsContainer" class="flex flex-wrap justify-center gap-2 min-h-[56px] p-3 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300">
-                        <!-- Rendered dynamically -->
-                    </div>
-
-                    <!-- Scrambled Letter Buttons -->
-                    <div id="g3LettersContainer" class="flex flex-wrap justify-center gap-2.5 pt-2">
-                        <!-- Rendered dynamically -->
-                    </div>
-
-                    <div class="flex justify-center gap-3 pt-2">
-                        <button onclick="clearG3Letters()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold">
-                            Tozalash
-                        </button>
-                        <button onclick="skipG3Word()" class="px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-600 text-xs font-semibold">
-                            O'tkazib yuborish →
-                        </button>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-            renderG3Tiles();
-        }
-
-        function renderG3Tiles() {
-            const slotsEl = document.getElementById('g3SlotsContainer');
-            const poolEl = document.getElementById('g3LettersContainer');
-
-            // Render slots
-            let slotsHTML = '';
-            for (let i = 0; i < g3TargetWord.length; i++) {
-                const chosen = g3CurrentLetters[i];
-                if (chosen) {
-                    slotsHTML += `
-                        <button onclick="removeG3Letter(${i})" class="w-11 h-12 sm:w-12 sm:h-13 rounded-xl bg-indigo-600 text-white font-extrabold text-lg shadow-sm hover:bg-indigo-700 transition">
-                            ${escapeHTML(chosen.char)}
-                        </button>
-                    `;
-                } else {
-                    slotsHTML += `
-                        <div class="w-11 h-12 sm:w-12 sm:h-13 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-300 font-bold">
-                            _
-                        </div>
-                    `;
-                }
-            }
-            slotsEl.innerHTML = slotsHTML;
-
-            // Render available scrambled letters
-            poolEl.innerHTML = g3PoolLetters.map(tile => `
-                <button onclick="pickG3Letter(${tile.id})" ${tile.used ? 'disabled' : ''}
-                    class="w-11 h-12 sm:w-12 sm:h-13 rounded-xl font-extrabold text-lg border-2 transition ${
-                        tile.used
-                            ? 'bg-slate-100 border-slate-100 text-slate-300 cursor-not-allowed'
-                            : 'bg-white border-slate-300 text-slate-800 hover:border-amber-500 hover:bg-amber-50 shadow-sm'
-                    }">
-                    ${escapeHTML(tile.char)}
-                </button>
-            `).join('');
-
-            // Check completion
-            if (g3CurrentLetters.length === g3TargetWord.length) {
-                const formed = g3CurrentLetters.map(t => t.char).join('');
-                const item = g3Words[g3Index];
-                if (formed === g3TargetWord) {
-                    recordAnswer(item, true, 20);
-                    slotsEl.classList.add('border-emerald-500', 'bg-emerald-50');
-                    setTimeout(() => {
-                        g3Index++;
-                        setupG3Round();
-                    }, 750);
-                } else {
-                    recordAnswer(item, false);
-                    slotsEl.classList.add('animate-shake', 'border-rose-400');
-                    setTimeout(() => {
-                        slotsEl.classList.remove('animate-shake', 'border-rose-400');
-                        clearG3Letters();
-                    }, 600);
-                }
-            }
-        }
-
-        function pickG3Letter(tileId) {
-            const tile = g3PoolLetters.find(t => t.id === tileId);
-            if (!tile || tile.used) return;
-            tile.used = true;
-            g3CurrentLetters.push(tile);
-            renderG3Tiles();
-        }
-
-        function removeG3Letter(slotIdx) {
-            const removed = g3CurrentLetters.splice(slotIdx, 1)[0];
-            if (removed) {
-                const tile = g3PoolLetters.find(t => t.id === removed.id);
-                if (tile) tile.used = false;
-            }
-            renderG3Tiles();
-        }
-
-        function clearG3Letters() {
-            g3CurrentLetters = [];
-            g3PoolLetters.forEach(t => t.used = false);
-            renderG3Tiles();
-        }
-
-        function useG3Hint() {
-            const nextIdx = g3CurrentLetters.length;
-            if (nextIdx >= g3TargetWord.length) return;
-            const neededChar = g3TargetWord[nextIdx];
-            const tile = g3PoolLetters.find(t => !t.used && t.char === neededChar);
-            if (tile) {
-                pickG3Letter(tile.id);
-            }
-        }
-
-        function skipG3Word() {
-            recordAnswer(g3Words[g3Index], false);
-            g3Index++;
-            setupG3Round();
-        }
-
-        // ==========================================
-        // GAME 4: TO'G'RI YOKI NOTO'G'RI (MULTI-SYNONYM BLITZ)
-        // ==========================================
-        let g4Queue = [];
-        let g4Index = 0;
-        let g4TimeLeft = 60;
-
-        function initGame4_TrueFalse() {
-            const pool = getActiveWordPool();
-            g4Queue = [];
-            g4Index = 0;
-            g4TimeLeft = 60;
-
-            const shuffled = shuffleArray([...pool, ...pool]).slice(0, 14);
-            shuffled.forEach((wordObj, idx) => {
-                const isTruePair = Math.random() > 0.45;
-                const checkUzbek = idx % 2 === 1;
-                const [synA, synB] = pickTwoDistinctSynonyms(wordObj);
-                let displayedMatch = '';
-
-                if (isTruePair) {
-                    displayedMatch = checkUzbek ? wordObj.uzbek : synB;
-                } else {
-                    const other = pool.filter(w => w.id !== wordObj.id);
-                    const randOther = other[Math.floor(Math.random() * other.length)];
-                    const randOtherSyn = randOther.synonyms[Math.floor(Math.random() * randOther.synonyms.length)];
-                    displayedMatch = checkUzbek ? randOther.uzbek : randOtherSyn;
-                }
-
-                g4Queue.push({
-                    wordObj,
-                    topWord: synA,
-                    bottomWord: displayedMatch,
-                    isUzbek: checkUzbek,
-                    isTruePair
-                });
-            });
-
-            renderG4Board();
-            currentGame.timerInterval = setInterval(() => {
-                g4TimeLeft--;
-                const timerEl = document.getElementById('g4TimerDisplay');
-                if (timerEl) timerEl.textContent = `${g4TimeLeft}s`;
-                if (g4TimeLeft <= 0) {
-                    finishGameSession();
-                }
-            }, 1000);
-        }
-
-        function renderG4Board() {
-            if (g4Index >= g4Queue.length) {
-                finishGameSession();
-                return;
-            }
-
-            const q = g4Queue[g4Index];
-            const board = document.getElementById('gameBoardContent');
-            board.innerHTML = `
-                <div class="max-w-xl mx-auto w-full space-y-6 text-center animate-pop">
-                    <div class="flex items-center justify-between px-2">
-                        <span class="text-xs font-bold text-slate-500">Juftlik ${g4Index + 1} / ${g4Queue.length}</span>
-                        <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 font-extrabold text-sm">
-                            <i data-lucide="timer" class="w-4 h-4"></i>
-                            <span id="g4TimerDisplay">${g4TimeLeft}s</span>
-                        </div>
-                    </div>
-
-                    <div id="g4CardBox" class="bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-md space-y-4">
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Inglizcha so'z</span>
-                            <h4 class="text-3xl font-extrabold text-slate-900 mt-1">${escapeHTML(q.topWord)}</h4>
-                        </div>
-
-                        <div class="flex items-center justify-center">
-                            <span class="w-9 h-9 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-extrabold text-lg">=</span>
-                        </div>
-
-                        <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider ${q.isUzbek ? 'text-teal-600' : 'text-indigo-600'}">
-                                ${q.isUzbek ? 'O\'zbekcha tarjimasi?' : 'Inglizcha sinonimi?'}
-                            </span>
-                            <h4 class="text-2xl sm:text-3xl font-extrabold ${q.isUzbek ? 'text-teal-700' : 'text-indigo-700'} mt-1">
-                                ${escapeHTML(q.bottomWord)}
-                            </h4>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <button onclick="handleG4Choice(false)" class="py-4 px-6 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border-2 border-rose-200 hover:border-rose-600 font-extrabold text-base transition flex items-center justify-center gap-2">
-                            <i data-lucide="x-circle" class="w-5 h-5"></i>
-                            <span>Noto'g'ri</span>
-                        </button>
-                        <button onclick="handleG4Choice(true)" class="py-4 px-6 rounded-2xl bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border-2 border-emerald-200 hover:border-emerald-600 font-extrabold text-base transition flex items-center justify-center gap-2">
-                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                            <span>To'g'ri</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        function handleG4Choice(userSaysTrue) {
-            const q = g4Queue[g4Index];
-            const isCorrect = (userSaysTrue === q.isTruePair);
-            recordAnswer(q.wordObj, isCorrect, 12);
-
-            const box = document.getElementById('g4CardBox');
-            if (isCorrect) {
-                box.classList.add('border-emerald-500', 'bg-emerald-50/40');
-            } else {
-                box.classList.add('border-rose-500', 'bg-rose-50/40', 'animate-shake');
-            }
-
-            setTimeout(() => {
-                g4Index++;
-                renderG4Board();
-            }, 350);
-        }
-
-        // ==========================================
-        // GAME 5: XOTIRA MATRITSASI (MULTI-SYNONYM MEMORY GRID)
-        // ==========================================
-        let g5Cards = [];
-        let g5Flipped = [];
-        let g5Locked = false;
-        let g5PairsFound = 0;
-        let g5TotalPairs = 0;
-
-        function initGame5_Memory() {
-            const pool = shuffleArray([...getActiveWordPool()]);
-            const selected = pool.slice(0, Math.min(6, pool.length));
-            g5TotalPairs = selected.length;
-            g5PairsFound = 0;
-            g5Flipped = [];
-            g5Locked = false;
-
-            const deck = [];
-            selected.forEach(w => {
-                const [synA, synB] = pickTwoDistinctSynonyms(w);
-                deck.push({ uid: w.id + '-a', pairId: w.id, text: synA, label: 'Sinonim 1', wordObj: w });
-                deck.push({ uid: w.id + '-b', pairId: w.id, text: synB, label: 'Sinonim 2', wordObj: w });
-            });
-
-            g5Cards = shuffleArray(deck);
-
-            const board = document.getElementById('gameBoardContent');
-            board.innerHTML = `
-                <div class="max-w-3xl mx-auto w-full space-y-5">
-                    <div id="g5MeaningToast" class="min-h-[48px] rounded-2xl bg-purple-50 border border-purple-200 px-4 py-2.5 text-center text-sm font-bold text-purple-900 flex items-center justify-center">
-                        Bir xil ma'noli ikkita sinonim kartani oching!
-                    </div>
-
-                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
-                        ${g5Cards.map((card, idx) => `
-                            <div onclick="flipG5Card(${idx})" id="g5-card-${idx}" class="perspective-1000 h-24 sm:h-28 cursor-pointer select-none">
-                                <div class="g5-inner relative w-full h-full transform-style-3d">
-                                    <!-- Card Back (Hidden face) -->
-                                    <div class="backface-hidden absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex flex-col items-center justify-center shadow-md hover:brightness-110 transition">
-                                        <i data-lucide="sparkles" class="w-6 h-6 opacity-80"></i>
-                                        <span class="text-[10px] font-bold uppercase tracking-widest mt-1 opacity-75">Sinonim</span>
-                                    </div>
-                                    <!-- Card Front (Word face) -->
-                                    <div class="backface-hidden rotate-y-180 absolute inset-0 rounded-2xl bg-white border-2 border-purple-300 p-2 flex flex-col items-center justify-center text-center shadow-sm">
-                                        <span class="text-[10px] font-bold uppercase text-purple-500">${card.label}</span>
-                                        <span class="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5 break-words">${escapeHTML(card.text)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        function flipG5Card(idx) {
-            if (g5Locked) return;
-            const cardEl = document.getElementById(`g5-card-${idx}`);
-            const inner = cardEl.querySelector('.g5-inner');
-            if (inner.classList.contains('rotate-y-180')) return;
-
-            inner.classList.add('rotate-y-180');
-            g5Flipped.push({ idx, card: g5Cards[idx], inner });
-
-            if (g5Flipped.length === 2) {
-                g5Locked = true;
-                const [first, second] = g5Flipped;
-                const isMatch = first.card.pairId === second.card.pairId;
-                const banner = document.getElementById('g5MeaningToast');
-
-                if (isMatch) {
-                    recordAnswer(first.card.wordObj, true, 18);
-                    g5PairsFound++;
-                    const allSynsText = first.card.wordObj.synonyms.map(s => escapeHTML(s)).join(' = ');
-                    banner.className = 'min-h-[48px] rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-center text-xs sm:text-sm font-bold text-emerald-900 animate-pop';
-                    banner.innerHTML = `Topildi! <strong class="text-indigo-700">${allSynsText}</strong> — O'zbekcha ma'nosi: <em>${escapeHTML(first.card.wordObj.uzbek)}</em>`;
-
-                    [first.inner, second.inner].forEach(el => {
-                        el.querySelector('.rotate-y-180').classList.replace('border-purple-300', 'border-emerald-400');
-                        el.querySelector('.rotate-y-180').classList.add('bg-emerald-50');
-                    });
-
-                    g5Flipped = [];
-                    g5Locked = false;
-
-                    if (g5PairsFound === g5TotalPairs) {
-                        setTimeout(() => finishGameSession(), 950);
-                    }
-                } else {
-                    recordAnswer(first.card.wordObj, false);
-                    setTimeout(() => {
-                        first.inner.classList.remove('rotate-y-180');
-                        second.inner.classList.remove('rotate-y-180');
-                        g5Flipped = [];
-                        g5Locked = false;
-                    }, 850);
-                }
-            }
-        }
-
-        // ==========================================
-        // 8. BACKUP / EXPORT / RESET UTILITIES
-        // ==========================================
-        function exportDataJSON() {
-            const dataStr = JSON.stringify(appState, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `SinonimMaster_Nusxa_${new Date().toISOString().slice(0, 10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('Barcha bo\'lim va so\'zlar faylga yuklandi!');
-        }
-
-        function importDataJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported.sections) && Array.isArray(imported.words)) {
-                        imported.words = imported.words.map(normalizeWordGroup);
-                        appState = imported;
-                        saveState();
-                        renderSectionsList();
-                        showToast('Ma\'lumotlar muvaffaqiyatli tiklandi!');
-                    } else {
-                        showToast('Noto\'g\'ri fayl formati!', 'error');
-                    }
-                } catch (err) {
-                    showToast('Faylni o\'qishda xatolik yuz berdi!', 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function confirmResetDefaults() {
-            openCustomDialog({
-                title: 'Boshlang\'ich holatga qaytarish',
-                message: 'Hozirgi barcha so\'zlaringiz o\'chirilib, dastlabki namuna bo\'limlar va so\'zlar tiklanadi. Davom etasizmi?',
-                confirmText: 'Ha, tiklash',
-                isDanger: true,
-                onConfirm: () => {
-                    appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                    saveState();
-                    renderSectionsList();
-                    showToast('Namuna so\'zlar tiklandi!');
-                }
-            });
-        }
-
-        // ==========================================
-        // 9. STRING & ARRAY HELPERS
-        // ==========================================
-        function shuffleArray(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function escapeHTML(str) {
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
-
-        function escapeAttr(str) {
-            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        }
-
-        function capitalizeFirst(str) {
-            if (!str) return '';
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        // ==========================================
-        // 10. INITIALIZATION ON LOAD
-        // ==========================================
-        // 8B. CODE & LINK SHARING WITH USAGE LIMIT (FIRESTORE)
-        // ==========================================
-        function getClaimerIdentifier() {
-            if (currentUser) return currentUser.uid;
-            let deviceId = localStorage.getItem('sinonim_device_id');
-            if (!deviceId) {
-                deviceId = 'dev-' + crypto.randomUUID();
-                localStorage.setItem('sinonim_device_id', deviceId);
-            }
-            return deviceId;
-        }
-
-        function quickShareSection(secId) {
-            switchTab('share');
-            const sec = appState.sections.find(s => s.id === secId);
-            if (sec) {
-                document.getElementById('sharePackTitle').value = sec.name;
-                document.querySelectorAll('.share-sec-checkbox').forEach(cb => {
-                    cb.checked = (cb.value === secId);
-                });
-                generateRandomShareKeyword();
-            }
-        }
-
-        function renderShareSectionChecklist() {
-            const container = document.getElementById('shareSectionsChecklist');
-            if (!container) return;
-            container.innerHTML = appState.sections.map(sec => {
-                const count = appState.words.filter(w => w.sectionId === sec.id).length;
-                return `
-                    <label class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 cursor-pointer">
-                        <div class="flex items-center gap-2.5">
-                            <input type="checkbox" value="${sec.id}" checked class="share-sec-checkbox rounded text-indigo-600 w-4 h-4">
-                            <span class="text-xs sm:text-sm font-bold text-slate-800">${escapeHTML(sec.name)}</span>
-                        </div>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${count} ta guruh</span>
-                    </label>
-                `;
-            }).join('');
-        }
-
-        function generateRandomShareKeyword() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'SIN-';
-            for (let i = 0; i < 5; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('shareCustomCode').value = code;
-        }
-
-        function setShareLimitPreset(val) {
-            const input = document.getElementById('shareMaxUsersInput');
-            const check = document.getElementById('shareUnlimitedCheck');
-            if (val === 0) {
-                check.checked = true;
-                input.disabled = true;
-            } else {
-                check.checked = false;
-                input.disabled = false;
-                input.value = val;
-            }
-        }
-
-        function toggleUnlimitedShare(isUnlimited) {
-            document.getElementById('shareMaxUsersInput').disabled = isUnlimited;
-        }
-
-        function normalizeCodeKey(rawInput) {
-            let cleaned = rawInput.trim();
-            // Extract ?code=... if user pasted a full URL
-            if (cleaned.includes('code=')) {
-                try {
-                    const urlObj = new URL(cleaned.startsWith('http') ? cleaned : 'https://example.com/' + cleaned);
-                    const param = urlObj.searchParams.get('code');
-                    if (param) cleaned = param;
-                } catch (e) {
-                    const match = cleaned.match(/code=([^&\s]+)/i);
-                    if (match) cleaned = decodeURIComponent(match[1]);
-                }
-            }
-            return cleaned.replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
-        }
-
-        function buildShareableLink(displayCode) {
-            const url = new URL(window.location.href.split('?')[0]);
-            url.searchParams.set('code', displayCode);
-            return url.toString();
-        }
-
-        async function handleCreateSharePack(e) {
-            e.preventDefault();
-            if (!currentUser) {
-                openAuthModal('login');
-                showToast('Ulashish uchun avval tizimga kiring!', 'warning');
-                return;
-            }
-
-            const title = document.getElementById('sharePackTitle').value.trim();
-            const rawCode = document.getElementById('shareCustomCode').value.trim().toUpperCase();
-            const codeKey = normalizeCodeKey(rawCode);
-            const isUnlimited = document.getElementById('shareUnlimitedCheck').checked;
-            const maxUsers = isUnlimited ? null : parseInt(document.getElementById('shareMaxUsersInput').value, 10);
-
-            const selectedSecIds = Array.from(document.querySelectorAll('.share-sec-checkbox:checked')).map(cb => cb.value);
-
-            if (!codeKey || codeKey.length < 3) {
-                showToast('Kalit so\'z kamida 3 ta harf yoki raqamdan iborat bo\'lsin!', 'warning');
-                return;
-            }
-            if (selectedSecIds.length === 0) {
-                showToast('Kamida bitta bo\'limni tanlang!', 'warning');
-                return;
-            }
-            if (!isUnlimited && (!maxUsers || maxUsers < 1)) {
-                showToast('Foydalanuvchilar soni kamida 1 bo\'lishi kerak!', 'warning');
-                return;
-            }
-
-            const sectionsToShare = appState.sections.filter(s => selectedSecIds.includes(s.id));
-            const wordsToShare = appState.words.filter(w => selectedSecIds.includes(w.sectionId));
-
-            if (wordsToShare.length === 0) {
-                showToast('Tanlangan bo\'limlarda hali so\'zlar yo\'q!', 'warning');
-                return;
-            }
-
-            const btn = document.getElementById('publishShareBtn');
-            btn.disabled = true;
-            btn.textContent = 'Saqlanmoqda...';
-
-            try {
-                const creatorName = currentUser.displayName || currentUser.email.split('@')[0];
-
-                if (isCloudAvailable && db) {
-                    const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
-                    const existing = await getDoc(packDocRef);
-                    if (existing.exists() && existing.data().creatorId !== currentUser.uid) {
-                        showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
-                        return;
-                    }
-
-                    const packData = {
-                        code: rawCode,
-                        codeKey: codeKey,
-                        title: title,
-                        creatorId: currentUser.uid,
-                        creatorName: creatorName,
-                        maxUses: maxUsers,
-                        usesCount: existing.exists() ? (existing.data().usesCount || 0) : 0,
-                        usedBy: existing.exists() ? (existing.data().usedBy || []) : [],
-                        sections: sectionsToShare,
-                        words: wordsToShare,
-                        createdAt: Date.now()
-                    };
-
-                    await setDoc(packDocRef, packData);
-                } else {
-                    const packsDb = getLocalSharedPacksDB();
-                    const existing = packsDb[codeKey];
-                    if (existing && existing.creatorId !== currentUser.uid) {
-                        showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
-                        return;
-                    }
-
-                    packsDb[codeKey] = {
-                        code: rawCode,
-                        codeKey: codeKey,
-                        title: title,
-                        creatorId: currentUser.uid,
-                        creatorName: creatorName,
-                        maxUses: maxUsers,
-                        usesCount: existing ? (existing.usesCount || 0) : 0,
-                        usedBy: existing ? (existing.usedBy || []) : [],
-                        sections: sectionsToShare,
-                        words: wordsToShare,
-                        createdAt: Date.now()
-                    };
-                    saveLocalSharedPacksDB(packsDb);
-                }
-
-                showToast(`"${rawCode}" kalit so'zi yaratildi! (${wordsToShare.length} ta guruh)`);
-                document.getElementById('sharePackTitle').value = '';
-                document.getElementById('shareCustomCode').value = '';
-                await loadMySharedPacks();
-            } catch (err) {
-                console.error(err);
-                showToast('Ulashishda xatolik yuz berdi!', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Kalit so\'z va havola yaratish</span>';
-                lucide.createIcons();
-            }
-        }
-
-        async function loadMySharedPacks() {
-            const container = document.getElementById('mySharedPacksList');
-            if (!container) return;
-
-            if (!currentUser) {
-                container.innerHTML = `
-                    <div class="text-center py-10 px-4 text-slate-500 text-sm">
-                        O'zingiz yaratgan kalit so'zlar ro'yxatini ko'rish uchun tizimga kiring.
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = `<div class="text-center py-8 text-xs font-semibold text-slate-400">Yuklanmoqda...</div>`;
-
-            try {
-                const myPacks = [];
-                if (isCloudAvailable && db) {
-                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shared_packs');
-                    const snap = await getDocs(colRef);
-                    snap.forEach(d => {
-                        const data = d.data();
-                        if (data.creatorId === currentUser.uid) {
-                            myPacks.push(data);
-                        }
-                    });
-                } else {
-                    const packsDb = getLocalSharedPacksDB();
-                    Object.values(packsDb).forEach(data => {
-                        if (data.creatorId === currentUser.uid) {
-                            myPacks.push(data);
-                        }
-                    });
-                }
-                myPacks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                if (myPacks.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-10 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                            <p class="text-sm font-bold text-slate-700">Hali ulashilgan to'plamlar yo'q</p>
-                            <p class="text-xs text-slate-500 mt-1">Chap tarafdagi shakl orqali kalit so'z yarating va o'quvchilarga yuboring.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = myPacks.map(pack => {
-                    const limitLabel = pack.maxUses === null
-                        ? `${pack.usesCount || 0} / Cheksiz o'quvchi`
-                        : `${pack.usesCount || 0} / ${pack.maxUses} o'quvchi foydalandi`;
-                    const isFull = pack.maxUses !== null && (pack.usesCount || 0) >= pack.maxUses;
-                    const shareUrl = buildShareableLink(pack.code);
-
-                    return `
-                        <div class="p-4 rounded-2xl border ${isFull ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200 bg-slate-50/60'} space-y-3">
-                            <div class="flex flex-wrap items-start justify-between gap-2">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="px-3 py-1 rounded-xl bg-indigo-600 text-white font-extrabold text-xs tracking-wider">${escapeHTML(pack.code)}</span>
-                                        <h4 class="font-extrabold text-slate-800 text-sm sm:text-base">${escapeHTML(pack.title)}</h4>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mt-1">
-                                        ${pack.sections.length} ta bo'lim • ${pack.words.length} ta sinonim guruhi
-                                    </p>
-                                </div>
-
-                                <span class="px-2.5 py-1 rounded-full text-xs font-extrabold ${isFull ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
-                                    ${limitLabel}
-                                </span>
-                            </div>
-
-                            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/70">
-                                <button onclick="copyTextFallback('${escapeAttr(pack.code)}', 'Kalit so\'z nusxalandi!')"
-                                    class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition">
-                                    <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-600"></i>
-                                    <span>Kodni nusxalash</span>
-                                </button>
-                                <button onclick="copyTextFallback('${escapeAttr(shareUrl)}', 'Havola nusxalandi!')"
-                                    class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-teal-400 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition">
-                                    <i data-lucide="link" class="w-3.5 h-3.5 text-teal-600"></i>
-                                    <span>Havolani nusxalash</span>
-                                </button>
-                                <button onclick="deleteSharedPack('${escapeAttr(pack.codeKey)}')"
-                                    class="ml-auto p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Kalit so'zni o'chirish">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                lucide.createIcons();
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = `<div class="text-center py-6 text-xs text-rose-600">Ro'yxatni yuklashda xatolik yuz berdi.</div>`;
-            }
-        }
-
-        async function deleteSharedPack(codeKey) {
-            if (!currentUser) return;
-            openCustomDialog({
-                title: 'Kalit so\'zni o\'chirish',
-                message: 'Ushbu kalit so\'z o\'chirilsa, yangi o\'quvchilar undan foydalana olmaydi. Davom etasizmi?',
-                confirmText: 'Ha, o\'chirish',
-                isDanger: true,
-                onConfirm: async () => {
-                    try {
-                        if (isCloudAvailable && db) {
-                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey));
-                        } else {
-                            const packsDb = getLocalSharedPacksDB();
-                            delete packsDb[codeKey];
-                            saveLocalSharedPacksDB(packsDb);
-                        }
-                        showToast('Kalit so\'z o\'chirildi', 'info');
-                        loadMySharedPacks();
-                    } catch (e) {
-                        showToast('O\'chirishda xatolik!', 'error');
-                    }
-                }
-            });
-        }
-
-        async function handleQuickCodeClaim(e) {
-            e.preventDefault();
-            const rawVal = document.getElementById('quickShareCodeInput').value;
-            await claimSharedPackByCode(rawVal);
-        }
-
-        async function claimSharedPackByCode(rawCodeOrUrl) {
-            const codeKey = normalizeCodeKey(rawCodeOrUrl);
-            if (!codeKey) {
-                showToast('Iltimos, kalit so\'z yoki havolani kiriting!', 'warning');
-                return;
-            }
-
-            const btn = document.getElementById('quickClaimBtn');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span>Tekshirilmoqda...</span>';
-            }
-
-            try {
-                let pack = null;
-                let packDocRef = null;
-                let packsDb = null;
-
-                if (isCloudAvailable && db && firebaseAuthUser) {
-                    packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
-                    const snap = await getDoc(packDocRef);
-                    if (snap.exists()) pack = snap.data();
-                } else {
-                    packsDb = getLocalSharedPacksDB();
-                    if (packsDb[codeKey]) pack = packsDb[codeKey];
-                }
-
-                if (!pack) {
-                    showToast('Bunday kalit so\'z topilmadi. Tekshirib qayta kiriting!', 'error');
-                    return;
-                }
-
-                const claimerId = getClaimerIdentifier();
-                const usedBy = Array.isArray(pack.usedBy) ? pack.usedBy : [];
-                const alreadyClaimed = usedBy.includes(claimerId);
-
-                // Check usage limit if not already claimed by this user/device
-                if (!alreadyClaimed && pack.maxUses !== null && (pack.usesCount || 0) >= pack.maxUses) {
-                    showToast('Kechirasiz, ushbu kalit so\'z uchun foydalanish limiti tugagan!', 'error');
-                    return;
-                }
-
-                // Increment usage counter if new claimer
-                if (!alreadyClaimed) {
-                    if (isCloudAvailable && packDocRef) {
-                        await updateDoc(packDocRef, {
-                            usesCount: (pack.usesCount || 0) + 1,
-                            usedBy: [...usedBy, claimerId]
-                        });
-                    } else if (packsDb) {
-                        packsDb[codeKey].usesCount = (pack.usesCount || 0) + 1;
-                        packsDb[codeKey].usedBy = [...usedBy, claimerId];
-                        saveLocalSharedPacksDB(packsDb);
-                    }
-                }
-
-                // Import shared sections & words into student's local/cloud vocabulary
-                const secIdMap = new Map();
-                (pack.sections || []).forEach(sharedSec => {
-                    const newSecId = 'sec-imp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
-                    secIdMap.set(sharedSec.id, newSecId);
-                    appState.sections.push({
-                        id: newSecId,
-                        name: `${sharedSec.name} (${pack.code})`,
-                        color: sharedSec.color || 'indigo'
-                    });
-                    appState.selectedSectionIds.push(newSecId);
-                });
-
-                let importedWordsCount = 0;
-                (pack.words || []).forEach(sharedWord => {
-                    const normalized = normalizeWordGroup(sharedWord);
-                    const mappedSecId = secIdMap.get(normalized.sectionId) || appState.sections[0].id;
-                    appState.words.unshift({
-                        id: 'w-imp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-                        sectionId: mappedSecId,
-                        uzbek: normalized.uzbek,
-                        synonyms: normalized.synonyms
-                    });
-                    importedWordsCount++;
-                });
-
-                saveState();
-                refreshAllViews();
-                document.getElementById('quickShareCodeInput').value = '';
-                showToast(`Muvaffaqiyatli yuklandi! "${pack.title}" to'plamidan ${importedWordsCount} ta sinonim guruhi qo'shildi!`);
-            } catch (err) {
-                console.error(err);
-                showToast('Yuklab olishda xatolik yuz berdi!', 'error');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i data-lucide="download-cloud" class="w-4 h-4"></i><span>Yuklab olish</span>';
-                    lucide.createIcons();
-                }
-            }
-        }
-
-        function copyTextFallback(text, successMsg) {
-            const temp = document.createElement('textarea');
-            temp.value = text;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-            showToast(successMsg);
-        }
-
-        // Expose functions to inline HTML event handlers (required inside type="module")
-        Object.assign(window, {
-            switchTab, toggleSound, selectSectionColor, handleAddSection, quickAddSectionPrompt,
-            renameSection, deleteSection, openSectionInWords, addSynonymInputField,
-            removeSynonymInputField, handleSynonymPaste, handleWordSubmit, editWord,
-            resetWordForm, deleteWord, renderWordsList, toggleGameSection, selectAllSections,
-            startGame, exitGame, closeResultModal, initGame1_Matching, handleG1Select,
-            handleG2Answer, pickG3Letter, removeG3Letter, clearG3Letters, useG3Hint,
-            skipG3Word, handleG4Choice, flipG5Card, exportDataJSON, importDataJSON,
-            confirmResetDefaults, openAuthModal, closeAuthModal, switchAuthMode,
-            handleAuthSubmit, handleLogout, handleQuickCodeClaim, handleCreateSharePack,
-            generateRandomShareKeyword, setShareLimitPreset, toggleUnlimitedShare,
-            loadMySharedPacks, deleteSharedPack, quickShareSection, copyTextFallback
-        });
-
-        // ==========================================
-        // 10. INITIALIZATION & AUTH BOOTSTRAP
-        // ==========================================
-        window.addEventListener('DOMContentLoaded', async () => {
-            updateHeaderStats();
-            updateSoundIcons();
-            renderGameSectionFilters();
-            populateSectionDropdowns();
-            initDynamicSynonymInputs(['', '']);
-            lucide.createIcons();
-
-            if (isCloudAvailable && auth) {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else if (!auth.currentUser) {
-                        await signInAnonymously(auth);
-                    }
-                } catch (e) {
-                    console.error('Initial auth error:', e);
-                }
-
-                onAuthStateChanged(auth, async (user) => {
-                    firebaseAuthUser = user;
-                    if (user && !user.isAnonymous) {
-                        currentUser = user;
-                        updateAuthHeaderUI();
-                        await loadUserProfileFromCloud(user.uid);
-                        loadMySharedPacks();
-                    } else {
-                        currentUser = null;
-                        updateAuthHeaderUI();
-                    }
-
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const sharedCodeParam = urlParams.get('code');
-                    if (sharedCodeParam && user) {
-                        document.getElementById('quickShareCodeInput').value = sharedCodeParam;
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        await claimSharedPackByCode(sharedCodeParam);
-                    }
-                });
-            } else {
-                // Standalone / Local Session Bootstrap
-                try {
-                    const savedSession = localStorage.getItem(LOCAL_SESSION_KEY);
-                    if (savedSession) {
-                        currentUser = JSON.parse(savedSession);
-                    }
-                } catch (e) {
-                    currentUser = null;
-                }
-                updateAuthHeaderUI();
-                if (currentUser) {
-                    await loadUserProfileFromCloud(currentUser.uid, currentUser.email);
-                    loadMySharedPacks();
-                }
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedCodeParam = urlParams.get('code');
-                if (sharedCodeParam) {
-                    document.getElementById('quickShareCodeInput').value = sharedCodeParam;
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    await claimSharedPackByCode(sharedCodeParam);
-                }
-            }
-        });
-    </script>
+    <!-- Tashqi JavaScript fayl -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
