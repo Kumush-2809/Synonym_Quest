@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="uz" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SinonimMaster — Boshqaruv Paneli (Admin)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.22s ease-out forwards; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-200">
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-68 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0 transition-transform duration-300 flex flex-col w-64 shrink-0">
+            <!-- Brand -->
+            <div class="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-600 to-teal-600 dark:from-indigo-400 dark:to-teal-400 bg-clip-text text-transparent block leading-none">
+                            SinonimMaster
+                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1 block">Admin & Baza Boshqaruvi</span>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Umumiy ko'rinish</span>
+                </button>
+                <button onclick="switchTab('words')" data-tab="words" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">
+                    <span class="flex items-center gap-3">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                        <span>Sinonim guruhlari</span>
+                    </span>
+                    <span id="navWordsCount" class="px-2 py-0.5 text-[11px] rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold">0</span>
+                </button>
+                <button onclick="switchTab('bulk')" data-tab="bulk" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">
+                    <i data-lucide="file-plus-2" class="w-4 h-4"></i>
+                    <span>Ommaviy import</span>
+                </button>
+                <button onclick="switchTab('sections')" data-tab="sections" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">
+                    <span class="flex items-center gap-3">
+                        <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+                        <span>Bo'limlar boshqaruvi</span>
+                    </span>
+                    <span id="navSectionsCount" class="px-2 py-0.5 text-[11px] rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-700 dark:text-teal-300 font-bold">0</span>
+                </button>
+                <button onclick="switchTab('sync')" data-tab="sync" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <span>Sinxronizatsiya va Zaxira</span>
+                </button>
+            </nav>
+
+            <!-- Live Sync Status Box -->
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <div class="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/50">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Baza ulangan (Jonli)
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-emerald-700/90 dark:text-emerald-400 leading-snug">
+                        Kalit: <code class="font-mono font-bold">sinonim_master_uz_v2</code>
+                    </p>
+                </div>
+                <a href="sinonimmaster_ko_p_sinonimli_o_yinlar_platformasi.html" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 dark:bg-indigo-600 hover:opacity-90 text-white text-xs font-bold flex items-center justify-center gap-2 transition shadow-sm">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    <span>Asosiy saytni ochish</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ==================== MAIN AREA ==================== -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <!-- Top Header -->
+            <header class="h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 z-20 shrink-0">
+                <div class="flex items-center gap-3 flex-1">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div class="relative max-w-md w-full hidden sm:block">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="globalSearchInput" oninput="handleGlobalSearch(this.value)" placeholder="Istalgan sinonim yoki o'zbekcha ma'noni izlash..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-indigo-500 outline-none transition">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs font-extrabold">
+                        <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span id="headerScoreDisplay">0</span> ball
+                    </div>
+
+                    <button onclick="openWordModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Yangi guruh</span>
+                    </button>
+
+                    <button onclick="toggleDarkMode()" title="Tungi/Kunduzgi rejim" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+                <!-- ==================== 1. DASHBOARD VIEW ==================== -->
+                <section id="view-dashboard" class="view-section space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Boshqaruv paneli</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">SinonimMaster o'yin platformasi bazasining jonli statistikasi va holati</p>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Sinonim guruhlari</span>
+                                <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i data-lucide="layers" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-baseline justify-between">
+                                <h3 id="kpiTotalGroups" class="text-2xl font-extrabold">0</h3>
+                                <span id="kpiAvgSynonyms" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400">O'rtacha 0 ta/guruh</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Jami inglizcha so'zlar</span>
+                                <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                                    <i data-lucide="whole-word" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-baseline justify-between">
+                                <h3 id="kpiTotalSynonyms" class="text-2xl font-extrabold">0</h3>
+                                <span class="text-xs font-semibold text-teal-600 dark:text-teal-400">Barcha sinonimlar</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Bo'limlar soni</span>
+                                <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i data-lucide="folder-kanban" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-baseline justify-between">
+                                <h3 id="kpiTotalSections" class="text-2xl font-extrabold">0</h3>
+                                <span id="kpiActiveSections" class="text-xs font-semibold text-purple-600 dark:text-purple-400">0 tasi o'yinda faol</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">O'yinchi umumiy bali</span>
+                                <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i data-lucide="trophy" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-baseline justify-between">
+                                <h3 id="kpiGlobalScore" class="text-2xl font-extrabold">0</h3>
+                                <button onclick="promptEditScore()" class="text-xs font-bold text-amber-600 hover:underline">Tahrirlash</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Breakdown & Quality Audit -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Section Distribution -->
+                        <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h2 class="text-base font-extrabold">Bo'limlar bo'yicha so'zlar taqsimoti</h2>
+                                    <p class="text-xs text-slate-500">Har bir mavzu ichidagi sinonim guruhlari va umumiy so'zlar soni</p>
+                                </div>
+                                <button onclick="switchTab('sections')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Bo'limlarni boshqarish →</button>
+                            </div>
+                            <div id="dashboardSectionsBreakdown" class="space-y-4">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Data Quality & Game Readiness Audit -->
+                        <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-teal-600"></i>
+                                    <h2 class="text-base font-extrabold">Baza sifati va O'yinlar tahlili</h2>
+                                </div>
+                                <p class="text-xs text-slate-500 mb-4">5 xil o'yin mukammal ishlashi uchun tavsiyalar</p>
+                                <div id="qualityAuditList" class="space-y-3">
+                                    <!-- Rendered via JS -->
+                                </div>
+                            </div>
+                            <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <button onclick="switchTab('bulk')" class="w-full py-2.5 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-xs font-bold flex items-center justify-center gap-2 transition">
+                                    <i data-lucide="zap" class="w-4 h-4"></i>
+                                    <span>Ommaviy import orqali tezkor so'z qo'shish</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Word Groups Preview -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-base font-extrabold">So'nggi qo'shilgan sinonim guruhlari</h2>
+                                <p class="text-xs text-slate-500">Asosiy saytdagi o'yinlarda darhol ishlatiladigan guruhlar</p>
+                            </div>
+                            <button onclick="switchTab('words')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Barchasini ko'rish →</button>
+                        </div>
+                        <div id="dashboardRecentGroups" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== 2. WORDS & MULTI-SYNONYMS CRUD VIEW ==================== -->
+                <section id="view-words" class="view-section hidden space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight">Sinonim guruhlari bazasi</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Har bir o'zbekcha ma'no uchun 2, 3, 5 yoki undan ko'p inglizcha sinonimlarni boshqaring</p>
+                        </div>
+                        <button onclick="openWordModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm transition">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Yangi sinonim guruhi</span>
+                        </button>
+                    </div>
+
+                    <!-- Search & Filters -->
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="wordsFilterSearch" oninput="renderWordsTable()" placeholder="Inglizcha sinonim yoki o'zbekcha tarjima bo'yicha qidirish..." class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-indigo-500 outline-none transition">
+                            </div>
+                            <select id="wordsFilterSection" onchange="renderWordsTable()" class="px-3.5 py-2.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold outline-none">
+                                <option value="all">Barcha bo'limlar</option>
+                            </select>
+                            <select id="wordsFilterCount" onchange="renderWordsTable()" class="px-3.5 py-2.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 font-semibold outline-none">
+                                <option value="all">Barcha hajmlar</option>
+                                <option value="2">Faqat 2 ta sinonimli</option>
+                                <option value="3plus">3+ ta sinonimli (Ortiqcha so'z o'yiniga mos)</option>
+                            </select>
+                        </div>
+
+                        <!-- Bulk Actions Toolbar (Visible when checkboxes selected) -->
+                        <div id="bulkActionBar" class="hidden pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                                <span id="selectedRowsCount">0</span> ta guruh tanlandi
+                            </span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select id="bulkMoveTargetSection" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 outline-none"></select>
+                                <button onclick="bulkMoveSelected()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+                                    Bo'limga ko'chirish
+                                </button>
+                                <button onclick="bulkDeleteSelected()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">
+                                    Tanlanganlarni o'chirish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Words Table -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 bg-slate-50/70 dark:bg-slate-800/40">
+                                        <th class="py-3.5 px-4 w-10">
+                                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAllWords(this.checked)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                                        </th>
+                                        <th class="py-3.5 px-4">O'zbekcha tarjimasi</th>
+                                        <th class="py-3.5 px-4">Inglizcha sinonimlar ro'yxati</th>
+                                        <th class="py-3.5 px-4">Bo'lim</th>
+                                        <th class="py-3.5 px-4 text-right">Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wordsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="wordsEmptyState" class="hidden py-14 text-center px-4">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="search-x" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-sm font-bold">Hech qanday sinonim guruhi topilmadi</h3>
+                            <p class="text-xs text-slate-500 mt-1">Qidiruv matnini o'zgartiring yoki yangi guruh qo'shing.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== 3. BULK IMPORT WIZARD VIEW ==================== -->
+                <section id="view-bulk" class="view-section hidden space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Ommaviy import (Bulk Import)</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">O'nlab sinonim guruhlarini bir vaqtning o'zida matn ko'rinishida joylab bazaga qo'shing</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                            <div>
+                                <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Qaysi bo'limga qo'shilsin?</label>
+                                <select id="bulkTargetSection" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm font-semibold outline-none"></select>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500">Matnni kiriting (har bir qator = 1 ta guruh)</label>
+                                    <button type="button" onclick="fillBulkSample()" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Namuna qo'yish</button>
+                                </div>
+                                <textarea id="bulkTextInput" rows="10" oninput="parseBulkPreview()" placeholder="Format: O'zbekcha ma'nosi : Sinonim1, Sinonim2, Sinonim3&#10;&#10;Masalan:&#10;Tez, chaqqon, jadal : Fast, Quick, Rapid, Swift&#10;Chiroyli, go'zal : Beautiful, Gorgeous, Stunning, Attractive&#10;Qiyin, murakkab : Difficult, Hard, Challenging, Complex" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-indigo-500 outline-none text-sm font-mono leading-relaxed"></textarea>
+                            </div>
+
+                            <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/50 text-xs text-indigo-800 dark:text-indigo-300 space-y-1">
+                                <p class="font-bold">Qo'llab-quvvatlanadigan formatlar:</p>
+                                <p>• <code class="font-mono">O'zbekcha ma'no : Word1, Word2, Word3</code></p>
+                                <p>• <code class="font-mono">Word1, Word2, Word3 - O'zbekcha ma'no</code></p>
+                            </div>
+
+                            <button onclick="executeBulkImport()" id="bulkImportBtn" disabled class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                <span id="bulkImportBtnText">0 ta guruhni bazaga saqlash</span>
+                            </button>
+                        </div>
+
+                        <!-- Live Preview -->
+                        <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-base font-extrabold">Jonli oldindan ko'rish</h2>
+                                    <p class="text-xs text-slate-500">Saqlashdan oldin ajratilgan so'zlarni tekshiring</p>
+                                </div>
+                                <span id="bulkValidBadge" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">0 ta tayyor</span>
+                            </div>
+                            <div id="bulkPreviewList" class="flex-1 overflow-y-auto space-y-2.5 max-h-[420px] pr-1">
+                                <div class="text-center py-16 text-xs text-slate-400">
+                                    Chap tarafdagi maydonga matn yozsangiz, natija shu yerda ko'rinadi...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== 4. SECTIONS MANAGER VIEW ==================== -->
+                <section id="view-sections" class="view-section hidden space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Bo'limlar boshqaruvi</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Mavzular yaratish, rangini belgilash va o'yinlarda faol bo'limlarni sozlash</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Add Section Form -->
+                        <div class="lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
+                            <h2 class="text-base font-extrabold mb-4">Yangi bo'lim qo'shish</h2>
+                            <form onsubmit="handleCreateSection(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Bo'lim nomi *</label>
+                                    <input type="text" id="newSecNameInput" required placeholder="Masalan: IELTS Speaking, 10-dars..." class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-indigo-500 outline-none text-sm font-semibold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Rang belgisi</label>
+                                    <div class="flex gap-2.5" id="newSecColorBtns">
+                                        <button type="button" data-color="indigo" onclick="pickNewSectionColor('indigo')" class="sec-color-btn w-8 h-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-indigo-500"></button>
+                                        <button type="button" data-color="teal" onclick="pickNewSectionColor('teal')" class="sec-color-btn w-8 h-8 rounded-full bg-teal-500"></button>
+                                        <button type="button" data-color="amber" onclick="pickNewSectionColor('amber')" class="sec-color-btn w-8 h-8 rounded-full bg-amber-500"></button>
+                                        <button type="button" data-color="rose" onclick="pickNewSectionColor('rose')" class="sec-color-btn w-8 h-8 rounded-full bg-rose-500"></button>
+                                        <button type="button" data-color="purple" onclick="pickNewSectionColor('purple')" class="sec-color-btn w-8 h-8 rounded-full bg-purple-500"></button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
+                                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                                    <span>Bo'lim yaratish</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Sections Cards -->
+                        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4" id="sectionsCardsGrid">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== 5. SYNC, BACKUP & SETTINGS VIEW ==================== -->
+                <section id="view-sync" class="view-section hidden space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Sinxronizatsiya va Tizim sozlamalari</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Asosiy SinonimMaster sayti bilan ma'lumot almashish, zaxira nusxa va tizim parametrlari</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Connection & Integration Info -->
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                                    <i data-lucide="link" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base font-extrabold">To'g'ridan-to'g'ri ulanish holati</h2>
+                                    <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">● sinxronlangan: sinonim_master_uz_v2</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                Ushbu Admin Panel asosiy <strong>SinonimMaster</strong> platformasi bilan aynan bir xil <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-xs">localStorage</code> bazasidan foydalanadi. Bu yerda qo'shilgan yoki tahrirlangan har bir so'z asosiy saytdagi 5 xil o'yinda darhol paydo bo'ladi.
+                            </p>
+                            <div class="pt-2 flex flex-wrap gap-3">
+                                <a href="sinonimmaster_ko_p_sinonimli_o_yinlar_platformasi.html" target="_blank" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-2 transition">
+                                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                                    <span>Asosiy saytni yangi oynada ochish</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Game Settings Control -->
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                            <h2 class="text-base font-extrabold">Platforma parametrlari</h2>
+                            <div class="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <p class="text-sm font-bold">O'yin ovoz effektlari</p>
+                                    <p class="text-xs text-slate-500">Asosiy saytdagi ovoz holati (soundEnabled)</p>
+                                </div>
+                                <input type="checkbox" id="settingSoundToggle" onchange="toggleSiteSound(this.checked)" class="w-5 h-5 accent-indigo-600 rounded cursor-pointer">
+                            </div>
+                            <div class="flex items-center justify-between py-3">
+                                <div>
+                                    <p class="text-sm font-bold">Umumiy o'yinchi bali (globalScore)</p>
+                                    <p class="text-xs text-slate-500">Hozirgi ball: <strong id="settingScoreText" class="text-amber-600">0</strong></p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="promptEditScore()" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold">O'zgartirish</button>
+                                    <button onclick="resetGlobalScore()" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 text-xs font-bold">0 qilish</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- JSON Backup & Restore -->
+                        <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <h2 class="text-base font-extrabold mb-1">JSON Zaxira nusxa (Export / Import)</h2>
+                            <p class="text-xs text-slate-500 mb-5">Asosiy saytning "Nusxa olish / Yuklash" tugmasi bilan 100% mos keluvchi fayl almashinuvi</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <button onclick="exportBackupJSON()" class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 text-left transition flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 flex items-center justify-center shrink-0">
+                                        <i data-lucide="download" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-extrabold">Bazani eksport qilish</span>
+                                        <span class="block text-xs text-slate-500">.JSON fayl yuklab olish</span>
+                                    </div>
+                                </button>
+
+                                <label class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50/40 dark:hover:bg-teal-950/30 text-left transition flex items-center gap-3.5 cursor-pointer">
+                                    <div class="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/60 text-teal-600 flex items-center justify-center shrink-0">
+                                        <i data-lucide="upload" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-extrabold">Bazani import qilish</span>
+                                        <span class="block text-xs text-slate-500">.JSON fayldan tiklash</span>
+                                    </div>
+                                    <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden">
+                                </label>
+
+                                <button onclick="confirmRestoreDefaultData()" class="p-4 rounded-2xl border border-rose-200 dark:border-rose-900/60 hover:bg-rose-50/60 dark:hover:bg-rose-950/30 text-left transition flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 flex items-center justify-center shrink-0">
+                                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-extrabold text-rose-600">Standart bazani tiklash</span>
+                                        <span class="block text-xs text-slate-500">14 ta namuna guruhga qaytish</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== ADD / EDIT WORD GROUP MODAL ==================== -->
+    <div id="wordModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full overflow-hidden animate-pop">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="wordModalTitle" class="text-lg font-extrabold">Yangi sinonimlar guruhi</h3>
+                <button onclick="closeWordModal()" class="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="saveWordGroupForm(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modalGroupId">
+
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Bo'lim *</label>
+                    <select id="modalSectionSelect" required class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm font-semibold outline-none"></select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1.5">O'zbekcha tarjimasi / umumiy ma'nosi *</label>
+                    <input type="text" id="modalUzbekInput" required placeholder="Masalan: Muhim, ahamiyatli, hal qiluvchi" class="w-full px-4 py-2.5 rounded-xl bg-teal-50/40 dark:bg-slate-800 border border-teal-200 dark:border-slate-700 focus:border-teal-500 outline-none text-sm font-semibold">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500">Inglizcha sinonimlar (kamida 2 ta) *</label>
+                        <span id="modalSynCountBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">2 ta</span>
+                    </div>
+                    <div id="modalSynonymsContainer" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
+                    <button type="button" onclick="addModalSynonymRow('')" class="mt-2.5 w-full py-2 px-3 rounded-xl border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Yana sinonim qo'shish</span>
+                    </button>
+                    <p class="text-[11px] text-slate-400 mt-1">Maslahat: Vergul bilan ajratilgan so'zlarni nusxa qo'ysangiz (masalan: <em>Big, Huge, Enormous</em>) avtomatik bo'linadi.</p>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2.5">
+                    <button type="button" onclick="closeWordModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300">Bekor qilish</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== CUSTOM DIALOG MODAL (NO ALERT/CONFIRM/PROMPT) ==================== -->
+    <div id="dialogModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 shadow-2xl animate-pop space-y-4">
+            <h3 id="dlgTitle" class="text-lg font-extrabold">Sarlavha</h3>
+            <p id="dlgMessage" class="text-sm text-slate-600 dark:text-slate-300"></p>
+            <input type="text" id="dlgInput" class="hidden w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-semibold">
+            <select id="dlgSelect" class="hidden w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-semibold"></select>
+            <div class="flex justify-end gap-2.5 pt-2">
+                <button id="dlgCancelBtn" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">Bekor qilish</button>
+                <button id="dlgConfirmBtn" class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">Tasdiqlash</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 1. EXACT DATA SCHEMA & STORAGE SYNC ====================
+        const STORAGE_KEY = 'sinonim_master_uz_v2';
+
+        const DEFAULT_DATA = {
+            globalScore: 0,
+            soundEnabled: true,
+            sections: [
+                { id: 'sec-1', name: 'IELTS Akademik', color: 'indigo' },
+                { id: 'sec-2', name: 'Kundalik Sifatlar', color: 'teal' },
+                { id: 'sec-3', name: 'Harakat Fe\'llari', color: 'amber' }
+            ],
+            selectedSectionIds: ['sec-1', 'sec-2', 'sec-3'],
+            words: [
+                { id: 'w-1', sectionId: 'sec-1', uzbek: 'Muhim, ahamiyatli, hal qiluvchi', synonyms: ['Important', 'Crucial', 'Essential', 'Vital', 'Significant'] },
+                { id: 'w-2', sectionId: 'sec-1', uzbek: 'Mo\'l-ko\'l, serob, ko\'p', synonyms: ['Abundant', 'Plentiful', 'Ample', 'Copious'] },
+                { id: 'w-3', sectionId: 'sec-1', uzbek: 'Yomonlashmoq, og\'irlashmoq', synonyms: ['Deteriorate', 'Worsen', 'Decline', 'Degrade'] },
+                { id: 'w-4', sectionId: 'sec-1', uzbek: 'Muqarrar, qochib bo\'lmaydigan', synonyms: ['Inevitable', 'Unavoidable', 'Inescapable'] },
+                { id: 'w-5', sectionId: 'sec-1', uzbek: 'Noaniq, tushunarsiz, mavhum', synonyms: ['Ambiguous', 'Vague', 'Obscure', 'Unclear'] },
+                { id: 'w-6', sectionId: 'sec-2', uzbek: 'Baxtli, quvnoq, shod', synonyms: ['Happy', 'Joyful', 'Cheerful', 'Delighted', 'Elated'] },
+                { id: 'w-7', sectionId: 'sec-2', uzbek: 'Ulkan, juda katta, bahaybat', synonyms: ['Big', 'Huge', 'Enormous', 'Gigantic', 'Immense'] },
+                { id: 'w-8', sectionId: 'sec-2', uzbek: 'Mehnatsevar, tirishqoq, g\'ayratli', synonyms: ['Diligent', 'Hardworking', 'Industrious', 'Assiduous'] },
+                { id: 'w-9', sectionId: 'sec-2', uzbek: 'Ehtiyotkor, sinchkov, hushyor', synonyms: ['Cautious', 'Careful', 'Prudent', 'Wary'] },
+                { id: 'w-10', sectionId: 'sec-2', uzbek: 'Qaysar, o\'jar, bir so\'zli', synonyms: ['Stubborn', 'Obstinate', 'Headstrong', 'Inflexible'] },
+                { id: 'w-11', sectionId: 'sec-3', uzbek: 'Tushunmoq, anglamoq, idrok etmoq', synonyms: ['Understand', 'Comprehend', 'Grasp', 'Perceive'] },
+                { id: 'w-12', sectionId: 'sec-3', uzbek: 'Yordam bermoq, ko\'maklashmoq', synonyms: ['Help', 'Assist', 'Facilitate', 'Aid', 'Support'] },
+                { id: 'w-13', sectionId: 'sec-3', uzbek: 'Kechiktirmoq, keyinga qoldirmoq', synonyms: ['Postpone', 'Delay', 'Defer', 'Adjourn'] },
+                { id: 'w-14', sectionId: 'sec-3', uzbek: 'G\'oyib bo\'lmoq, yo\'qolmoq', synonyms: ['Vanish', 'Disappear', 'Fade', 'Evaporate'] }
+            ]
+        };
+
+        function normalizeWordGroup(item) {
+            if (Array.isArray(item.synonyms) && item.synonyms.length >= 2) return item;
+            const syns = [];
+            if (item.word1) syns.push(item.word1);
+            if (item.word2) syns.push(item.word2);
+            return {
+                id: item.id || ('w-' + Date.now() + Math.random()),
+                sectionId: item.sectionId,
+                uzbek: item.uzbek || '',
+                synonyms: syns
+            };
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sinonim_master_uz_v1');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed.sections) && Array.isArray(parsed.words)) {
+                        parsed.words = parsed.words.map(normalizeWordGroup);
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Storage load error:', e);
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+
+        let appState = loadState();
+        let selectedWordIds = new Set();
+        let newSectionColor = 'indigo';
+        let parsedBulkGroups = [];
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Storage save error:', e);
+            }
+            refreshAllViews();
+        }
+
+        // Real-time Cross-Tab Synchronization with SinonimMaster main site
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY && e.newValue) {
+                try {
+                    const updated = JSON.parse(e.newValue);
+                    if (Array.isArray(updated.sections) && Array.isArray(updated.words)) {
+                        updated.words = updated.words.map(normalizeWordGroup);
+                        appState = updated;
+                        refreshAllViews();
+                        showToast('Asosiy saytdan yangi o\'zgarishlar sinxronlandi!', 'info');
+                    }
+                } catch (err) {}
+            }
+        });
+
+        // ==================== 2. NAVIGATION & THEME ====================
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.className = "nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300";
+                } else {
+                    btn.className = "nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all";
+                }
+            });
+
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            const activeView = document.getElementById(`view-${tabName}`);
+            if (activeView) activeView.classList.remove('hidden');
+
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+            refreshAllViews();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('sinonim_admin_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        function handleGlobalSearch(val) {
+            if (val.trim().length > 0) {
+                switchTab('words');
+                document.getElementById('wordsFilterSearch').value = val;
+                renderWordsTable();
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-800 text-white',
+                warning: 'bg-amber-500 text-white'
+            };
+            const el = document.createElement('div');
+            el.className = `${colors[type] || colors.info} px-4 py-3 rounded-2xl shadow-lg text-xs sm:text-sm font-bold animate-pop pointer-events-auto`;
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.25s';
+                setTimeout(() => el.remove(), 250);
+            }, 2800);
+        }
+
+        function openDialog({ title, message, showInput = false, defaultValue = '', selectOptions = null, isDanger = false, onConfirm }) {
+            const modal = document.getElementById('dialogModal');
+            document.getElementById('dlgTitle').textContent = title;
+            document.getElementById('dlgMessage').textContent = message;
+
+            const inp = document.getElementById('dlgInput');
+            if (showInput) {
+                inp.classList.remove('hidden');
+                inp.value = defaultValue;
+            } else {
+                inp.classList.add('hidden');
+            }
+
+            const sel = document.getElementById('dlgSelect');
+            if (selectOptions) {
+                sel.classList.remove('hidden');
+                sel.innerHTML = selectOptions.map(o => `<option value="${o.value}">${escapeHTML(o.label)}</option>`).join('');
+            } else {
+                sel.classList.add('hidden');
+            }
+
+            const confirmBtn = document.getElementById('dlgConfirmBtn');
+            confirmBtn.className = isDanger
+                ? 'px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold'
+                : 'px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold';
+
+            modal.classList.remove('hidden');
+            if (showInput) inp.focus();
+
+            const close = () => {
+                modal.classList.add('hidden');
+                confirmBtn.onclick = null;
+                document.getElementById('dlgCancelBtn').onclick = null;
+            };
+
+            document.getElementById('dlgCancelBtn').onclick = close;
+            confirmBtn.onclick = () => {
+                const res = showInput ? inp.value.trim() : (selectOptions ? sel.value : true);
+                close();
+                if (onConfirm) onConfirm(res);
+            };
+        }
+
+        // ==================== 3. REFRESH & DASHBOARD RENDERING ====================
+        const COLOR_STYLES = {
+            indigo: { bar: 'bg-indigo-500', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800', dot: 'bg-indigo-500' },
+            teal: { bar: 'bg-teal-500', badge: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800', dot: 'bg-teal-500' },
+            amber: { bar: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800', dot: 'bg-amber-500' },
+            rose: { bar: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800', dot: 'bg-rose-500' },
+            purple: { bar: 'bg-purple-500', badge: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800', dot: 'bg-purple-500' }
+        };
+
+        function refreshAllViews() {
+            const totalGroups = appState.words.length;
+            const totalSynonyms = appState.words.reduce((acc, w) => acc + w.synonyms.length, 0);
+            const avgSyn = totalGroups > 0 ? (totalSynonyms / totalGroups).toFixed(1) : 0;
+
+            document.getElementById('navWordsCount').textContent = totalGroups;
+            document.getElementById('navSectionsCount').textContent = appState.sections.length;
+            document.getElementById('headerScoreDisplay').textContent = appState.globalScore;
+
+            document.getElementById('kpiTotalGroups').textContent = totalGroups;
+            document.getElementById('kpiAvgSynonyms').textContent = `O'rtacha ${avgSyn} ta/guruh`;
+            document.getElementById('kpiTotalSynonyms').textContent = totalSynonyms;
+            document.getElementById('kpiTotalSections').textContent = appState.sections.length;
+            document.getElementById('kpiActiveSections').textContent = `${appState.selectedSectionIds.length} tasi o'yinda faol`;
+            document.getElementById('kpiGlobalScore').textContent = appState.globalScore;
+
+            document.getElementById('settingSoundToggle').checked = !!appState.soundEnabled;
+            document.getElementById('settingScoreText').textContent = appState.globalScore;
+
+            syncAllSectionDropdowns();
+            renderDashboard();
+            renderWordsTable();
+            renderSectionsCards();
+            lucide.createIcons();
+        }
+
+        function renderDashboard() {
+            // 1. Section distribution
+            const breakdownEl = document.getElementById('dashboardSectionsBreakdown');
+            const totalGroups = Math.max(1, appState.words.length);
+
+            breakdownEl.innerHTML = appState.sections.map(sec => {
+                const secWords = appState.words.filter(w => w.sectionId === sec.id);
+                const synSum = secWords.reduce((s, w) => s + w.synonyms.length, 0);
+                const pct = Math.round((secWords.length / totalGroups) * 100);
+                const style = COLOR_STYLES[sec.color] || COLOR_STYLES.indigo;
+
+                return `
+                    <div>
+                        <div class="flex items-center justify-between text-xs sm:text-sm mb-1.5">
+                            <span class="font-bold flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full ${style.dot}"></span>
+                                ${escapeHTML(sec.name)}
+                            </span>
+                            <span class="text-xs font-semibold text-slate-500">
+                                <strong class="text-slate-800 dark:text-slate-200">${secWords.length}</strong> guruh (${synSum} so'z) • ${pct}%
+                            </span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div class="${style.bar} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 2. Quality & Game Audit
+            const twoSynOnly = appState.words.filter(w => w.synonyms.length === 2).length;
+            const threePlus = appState.words.filter(w => w.synonyms.length >= 3).length;
+            const emptySections = appState.sections.filter(s => !appState.words.some(w => w.sectionId === s.id));
+
+            const auditEl = document.getElementById('qualityAuditList');
+            auditEl.innerHTML = `
+                <div class="p-3 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/50 flex items-start gap-2.5">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                    <div class="text-xs">
+                        <p class="font-bold text-emerald-900 dark:text-emerald-200">${threePlus} ta guruh "Ortiqcha so'z" o'yiniga tayyor</p>
+                        <p class="text-emerald-700 dark:text-emerald-400 mt-0.5">Kamida 3 ta sinonim bo'lgan guruhlar 2-o'yinning maxsus rejimini ochadi.</p>
+                    </div>
+                </div>
+                ${twoSynOnly > 0 ? `
+                <div class="p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-800/50 flex items-start gap-2.5">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                    <div class="text-xs">
+                        <p class="font-bold text-amber-900 dark:text-amber-200">${twoSynOnly} ta guruhda faqat 2 ta sinonim bor</p>
+                        <p class="text-amber-700 dark:text-amber-400 mt-0.5">Ularga 3-sinonim qo'shsangiz, o'yinlar yanada boyroq bo'ladi.</p>
+                    </div>
+                </div>` : ''}
+                ${emptySections.length > 0 ? `
+                <div class="p-3 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-800/50 flex items-start gap-2.5">
+                    <i data-lucide="folder-open" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+                    <div class="text-xs">
+                        <p class="font-bold text-rose-900 dark:text-rose-200">${emptySections.length} ta bo'sh bo'lim mavjud</p>
+                        <p class="text-rose-700 dark:text-rose-400 mt-0.5">${emptySections.map(s => escapeHTML(s.name)).join(', ')}</p>
+                    </div>
+                </div>` : ''}
+            `;
+
+            // 3. Recent Groups
+            const recentEl = document.getElementById('dashboardRecentGroups');
+            const recentList = appState.words.slice(0, 5);
+            recentEl.innerHTML = recentList.map(w => {
+                const sec = appState.sections.find(s => s.id === w.sectionId) || { name: 'Bo\'lim', color: 'indigo' };
+                const style = COLOR_STYLES[sec.color] || COLOR_STYLES.indigo;
+                return `
+                    <div class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm text-teal-700 dark:text-teal-400">${escapeHTML(w.uzbek)}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${style.badge}">${escapeHTML(sec.name)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5 mt-1.5">
+                                ${w.synonyms.map((s, i) => `<span class="px-2 py-0.5 rounded-lg text-xs font-bold ${i === 0 ? 'bg-indigo-600 text-white' : 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'}">${escapeHTML(s)}</span>`).join('')}
+                            </div>
+                        </div>
+                        <button onclick="openWordModal('${w.id}')" class="self-start sm:self-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0">Tahrirlash</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 4. WORDS CRUD & BULK ACTIONS ====================
+        function syncAllSectionDropdowns() {
+            const selects = ['wordsFilterSection', 'bulkMoveTargetSection', 'bulkTargetSection', 'modalSectionSelect'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const prev = el.value;
+                const hasAll = id === 'wordsFilterSection';
+                el.innerHTML = (hasAll ? '<option value="all">Barcha bo\'limlar</option>' : '') +
+                    appState.sections.map(s => `<option value="${s.id}">${escapeHTML(s.name)}</option>`).join('');
+                if (prev && Array.from(el.options).some(o => o.value === prev)) {
+                    el.value = prev;
+                }
+            });
+        }
+
+        function renderWordsTable() {
+            const query = document.getElementById('wordsFilterSearch').value.toLowerCase().trim();
+            const secFilter = document.getElementById('wordsFilterSection').value;
+            const countFilter = document.getElementById('wordsFilterCount').value;
+
+            const filtered = appState.words.filter(w => {
+                const matchSec = secFilter === 'all' || w.sectionId === secFilter;
+                const matchCount = countFilter === 'all' ||
+                    (countFilter === '2' && w.synonyms.length === 2) ||
+                    (countFilter === '3plus' && w.synonyms.length >= 3);
+                const matchQuery = !query ||
+                    w.uzbek.toLowerCase().includes(query) ||
+                    w.synonyms.some(s => s.toLowerCase().includes(query));
+                return matchSec && matchCount && matchQuery;
+            });
+
+            const tbody = document.getElementById('wordsTableBody');
+            const emptyEl = document.getElementById('wordsEmptyState');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyEl.classList.remove('hidden');
+                updateBulkBar();
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            tbody.innerHTML = filtered.map(w => {
+                const sec = appState.sections.find(s => s.id === w.sectionId) || { name: 'Noma\'lum', color: 'indigo' };
+                const style = COLOR_STYLES[sec.color] || COLOR_STYLES.indigo;
+                const checked = selectedWordIds.has(w.id) ? 'checked' : '';
+
+                return `
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                        <td class="py-3.5 px-4">
+                            <input type="checkbox" ${checked} onchange="toggleWordSelection('${w.id}', this.checked)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                        </td>
+                        <td class="py-3.5 px-4 font-bold text-teal-800 dark:text-teal-300 max-w-xs">
+                            ${escapeHTML(w.uzbek)}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex flex-wrap gap-1.5">
+                                ${w.synonyms.map((s, idx) => `
+                                    <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold ${idx === 0 ? 'bg-indigo-600 text-white' : 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800'}">
+                                        ${escapeHTML(s)}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border ${style.badge}">${escapeHTML(sec.name)}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            <button onclick="openWordModal('${w.id}')" title="Tahrirlash" class="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 transition">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteSingleWord('${w.id}')" title="O'chirish" class="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateBulkBar();
+            lucide.createIcons();
+        }
+
+        function toggleWordSelection(id, isChecked) {
+            if (isChecked) selectedWordIds.add(id);
+            else selectedWordIds.delete(id);
+            updateBulkBar();
+        }
+
+        function toggleSelectAllWords(isChecked) {
+            if (isChecked) {
+                appState.words.forEach(w => selectedWordIds.add(w.id));
+            } else {
+                selectedWordIds.clear();
+            }
+            renderWordsTable();
+        }
+
+        function updateBulkBar() {
+            const bar = document.getElementById('bulkActionBar');
+            document.getElementById('selectedRowsCount').textContent = selectedWordIds.size;
+            if (selectedWordIds.size > 0) bar.classList.remove('hidden');
+            else bar.classList.add('hidden');
+        }
+
+        function bulkMoveSelected() {
+            const targetSecId = document.getElementById('bulkMoveTargetSection').value;
+            if (!targetSecId || selectedWordIds.size === 0) return;
+            appState.words.forEach(w => {
+                if (selectedWordIds.has(w.id)) w.sectionId = targetSecId;
+            });
+            const count = selectedWordIds.size;
+            selectedWordIds.clear();
+            document.getElementById('selectAllCheckbox').checked = false;
+            saveState();
+            showToast(`${count} ta guruh boshqa bo'limga ko'chirildi!`);
+        }
+
+        function bulkDeleteSelected() {
+            if (selectedWordIds.size === 0) return;
+            const count = selectedWordIds.size;
+            openDialog({
+                title: 'Guruhlarni o\'chirish',
+                message: `Tanlangan ${count} ta sinonim guruhini bazadan o'chirishga ishonchingiz komilmi?`,
+                isDanger: true,
+                onConfirm: () => {
+                    appState.words = appState.words.filter(w => !selectedWordIds.has(w.id));
+                    selectedWordIds.clear();
+                    document.getElementById('selectAllCheckbox').checked = false;
+                    saveState();
+                    showToast(`${count} ta guruh o'chirildi`, 'info');
+                }
+            });
+        }
+
+        function deleteSingleWord(id) {
+            appState.words = appState.words.filter(w => w.id !== id);
+            selectedWordIds.delete(id);
+            saveState();
+            showToast('Sinonimlar guruhi o\'chirildi', 'info');
+        }
+
+        // ==================== 5. ADD / EDIT MODAL LOGIC ====================
+        function openWordModal(editId = null) {
+            syncAllSectionDropdowns();
+            const modal = document.getElementById('wordModal');
+            document.getElementById('modalGroupId').value = editId || '';
+            const container = document.getElementById('modalSynonymsContainer');
+            container.innerHTML = '';
+
+            if (editId) {
+                const item = appState.words.find(w => w.id === editId);
+                if (!item) return;
+                document.getElementById('wordModalTitle').textContent = 'Sinonimlar guruhini tahrirlash';
+                document.getElementById('modalSectionSelect').value = item.sectionId;
+                document.getElementById('modalUzbekInput').value = item.uzbek;
+                item.synonyms.forEach(s => addModalSynonymRow(s, false));
+            } else {
+                document.getElementById('wordModalTitle').textContent = 'Yangi sinonimlar guruhi qo\'shish';
+                document.getElementById('modalUzbekInput').value = '';
+                addModalSynonymRow('', false);
+                addModalSynonymRow('', false);
+            }
+
+            updateModalSynBadge();
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeWordModal() {
+            document.getElementById('wordModal').classList.add('hidden');
+        }
+
+        function addModalSynonymRow(val = '', focus = true) {
+            const container = document.getElementById('modalSynonymsContainer');
+            const idx = container.children.length + 1;
+            const row = document.createElement('div');
+            row.className = 'modal-syn-row flex items-center gap-2';
+            row.innerHTML = `
+                <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-extrabold flex items-center justify-center shrink-0 modal-row-num">${idx}</span>
+                <input type="text" value="${escapeAttr(val)}" placeholder="${idx}-sinonim (inglizcha)" onpaste="handleSmartPaste(event, this)" class="modal-syn-input flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-indigo-500 outline-none text-sm font-semibold">
+                <button type="button" onclick="removeModalSynRow(this)" class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            `;
+            container.appendChild(row);
+            updateModalSynBadge();
+            lucide.createIcons();
+            if (focus) row.querySelector('input').focus();
+        }
+
+        function removeModalSynRow(btn) {
+            const container = document.getElementById('modalSynonymsContainer');
+            if (container.children.length <= 2) {
+                showToast('Kamida 2 ta sinonim bo\'lishi shart!', 'warning');
+                return;
+            }
+            btn.closest('.modal-syn-row').remove();
+            updateModalSynBadge();
+        }
+
+        function updateModalSynBadge() {
+            const rows = document.querySelectorAll('#modalSynonymsContainer .modal-syn-row');
+            rows.forEach((r, i) => r.querySelector('.modal-row-num').textContent = i + 1);
+            document.getElementById('modalSynCountBadge').textContent = `${rows.length} ta`;
+        }
+
+        function handleSmartPaste(e, inputEl) {
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            if (text && (text.includes(',') || text.includes(';'))) {
+                e.preventDefault();
+                const parts = text.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+                if (parts.length > 0) {
+                    inputEl.value = parts[0];
+                    for (let i = 1; i < parts.length; i++) {
+                        addModalSynonymRow(parts[i], false);
+                    }
+                    showToast(`${parts.length} ta sinonim alohida kataklarga ajratildi!`, 'info');
+                }
+            }
+        }
+
+        function saveWordGroupForm(e) {
+            e.preventDefault();
+            const editId = document.getElementById('modalGroupId').value;
+            const sectionId = document.getElementById('modalSectionSelect').value;
+            const uzbek = capitalizeFirst(document.getElementById('modalUzbekInput').value.trim());
+
+            const rawSyns = Array.from(document.querySelectorAll('#modalSynonymsContainer .modal-syn-input'))
+                .map(i => capitalizeFirst(i.value.trim()))
+                .filter(Boolean);
+
+            const seen = new Set();
+            const synonyms = [];
+            rawSyns.forEach(s => {
+                if (!seen.has(s.toLowerCase())) {
+                    seen.add(s.toLowerCase());
+                    synonyms.push(s);
+                }
+            });
+
+            if (synonyms.length < 2) {
+                showToast('Kamida 2 ta turli inglizcha sinonim kiriting!', 'warning');
+                return;
+            }
+
+            if (editId) {
+                const idx = appState.words.findIndex(w => w.id === editId);
+                if (idx !== -1) {
+                    appState.words[idx] = { ...appState.words[idx], sectionId, uzbek, synonyms };
+                    showToast('Sinonimlar guruhi yangilandi!');
+                }
+            } else {
+                appState.words.unshift({
+                    id: 'w-' + Date.now(),
+                    sectionId,
+                    uzbek,
+                    synonyms
+                });
+                if (!appState.selectedSectionIds.includes(sectionId)) {
+                    appState.selectedSectionIds.push(sectionId);
+                }
+                showToast(`Yangi guruh (${synonyms.length} ta sinonim) qo'shildi!`);
+            }
+
+            closeWordModal();
+            saveState();
+        }
+
+        // ==================== 6. BULK IMPORT WIZARD ====================
+        function fillBulkSample() {
+            document.getElementById('bulkTextInput').value =
+`Tez, chaqqon, jadal : Fast, Quick, Rapid, Swift, Brisk
+Chiroyli, go'zal, maftunkor : Beautiful, Gorgeous, Stunning, Attractive
+Qiyin, murakkab, og'ir : Difficult, Hard, Challenging, Complex, Arduous
+Aqlli, dono, zukko : Smart, Intelligent, Clever, Bright, Wise`;
+            parseBulkPreview();
+        }
+
+        function parseBulkPreview() {
+            const text = document.getElementById('bulkTextInput').value;
+            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+            parsedBulkGroups = [];
+
+            lines.forEach(line => {
+                let uzbek = '';
+                let synPart = '';
+
+                if (line.includes(':')) {
+                    const idx = line.indexOf(':');
+                    uzbek = line.slice(0, idx).trim();
+                    synPart = line.slice(idx + 1).trim();
+                } else if (line.includes(' - ')) {
+                    const idx = line.indexOf(' - ');
+                    synPart = line.slice(0, idx).trim();
+                    uzbek = line.slice(idx + 3).trim();
+                }
+
+                if (uzbek && synPart) {
+                    const syns = Array.from(new Set(
+                        synPart.split(/[,;]+/).map(s => capitalizeFirst(s.trim())).filter(Boolean)
+                    ));
+                    if (syns.length >= 2) {
+                        parsedBulkGroups.push({
+                            uzbek: capitalizeFirst(uzbek),
+                            synonyms: syns
+                        });
+                    }
+                }
+            });
+
+            const btn = document.getElementById('bulkImportBtn');
+            const btnText = document.getElementById('bulkImportBtnText');
+            const badge = document.getElementById('bulkValidBadge');
+            const previewEl = document.getElementById('bulkPreviewList');
+
+            badge.textContent = `${parsedBulkGroups.length} ta tayyor`;
+            btnText.textContent = `${parsedBulkGroups.length} ta guruhni bazaga saqlash`;
+            btn.disabled = parsedBulkGroups.length === 0;
+
+            if (parsedBulkGroups.length === 0) {
+                previewEl.innerHTML = `<div class="text-center py-16 text-xs text-slate-400">Chap tarafdagi maydonga to'g'ri formatda matn kiriting...</div>`;
+                return;
+            }
+
+            previewEl.innerHTML = parsedBulkGroups.map(g => `
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <div class="text-xs font-extrabold text-teal-700 dark:text-teal-400">${escapeHTML(g.uzbek)}</div>
+                    <div class="flex flex-wrap gap-1 mt-1.5">
+                        ${g.synonyms.map(s => `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHTML(s)}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function executeBulkImport() {
+            if (parsedBulkGroups.length === 0) return;
+            const sectionId = document.getElementById('bulkTargetSection').value;
+            const now = Date.now();
+
+            parsedBulkGroups.slice().reverse().forEach((g, idx) => {
+                appState.words.unshift({
+                    id: `w-${now}-${idx}`,
+                    sectionId,
+                    uzbek: g.uzbek,
+                    synonyms: g.synonyms
+                });
+            });
+
+            if (!appState.selectedSectionIds.includes(sectionId)) {
+                appState.selectedSectionIds.push(sectionId);
+            }
+
+            const count = parsedBulkGroups.length;
+            document.getElementById('bulkTextInput').value = '';
+            parseBulkPreview();
+            saveState();
+            showToast(`${count} ta sinonimlar guruhi muvaffaqiyatli import qilindi!`);
+            switchTab('words');
+        }
+
+        // ==================== 7. SECTIONS MANAGER ====================
+        function pickNewSectionColor(color) {
+            newSectionColor = color;
+            document.querySelectorAll('.sec-color-btn').forEach(btn => {
+                if (btn.dataset.color === color) {
+                    btn.classList.add('ring-2', 'ring-offset-2', `ring-${color}-500`);
+                } else {
+                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500', 'ring-teal-500', 'ring-amber-500', 'ring-rose-500', 'ring-purple-500');
+                }
+            });
+        }
+
+        function handleCreateSection(e) {
+            e.preventDefault();
+            const inp = document.getElementById('newSecNameInput');
+            const name = inp.value.trim();
+            if (!name) return;
+
+            const newSec = { id: 'sec-' + Date.now(), name, color: newSectionColor };
+            appState.sections.push(newSec);
+            appState.selectedSectionIds.push(newSec.id);
+            inp.value = '';
+            saveState();
+            showToast(`"${name}" bo'limi yaratildi!`);
+        }
+
+        function renderSectionsCards() {
+            const grid = document.getElementById('sectionsCardsGrid');
+            grid.innerHTML = appState.sections.map(sec => {
+                const count = appState.words.filter(w => w.sectionId === sec.id).length;
+                const isSelected = appState.selectedSectionIds.includes(sec.id);
+                const style = COLOR_STYLES[sec.color] || COLOR_STYLES.indigo;
+
+                return `
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-3.5 h-3.5 rounded-full ${style.dot}"></span>
+                                <h3 class="font-extrabold text-base">${escapeHTML(sec.name)}</h3>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${style.badge}">${count} guruh</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <label class="inline-flex items-center gap-2 cursor-pointer font-semibold text-slate-600 dark:text-slate-300">
+                                <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSectionInGames('${sec.id}', this.checked)" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>O'yinlarda faol</span>
+                            </label>
+                            <div class="flex items-center gap-1">
+                                <button onclick="renameSectionPrompt('${sec.id}')" title="Nomini o'zgartirish" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/60">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteSectionPrompt('${sec.id}')" title="O'chirish" class="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSectionInGames(secId, isChecked) {
+            if (isChecked) {
+                if (!appState.selectedSectionIds.includes(secId)) appState.selectedSectionIds.push(secId);
+            } else {
+                appState.selectedSectionIds = appState.selectedSectionIds.filter(id => id !== secId);
+            }
+            saveState();
+        }
+
+        function renameSectionPrompt(secId) {
+            const sec = appState.sections.find(s => s.id === secId);
+            if (!sec) return;
+            openDialog({
+                title: 'Bo\'lim nomini tahrirlash',
+                message: 'Bo\'lim uchun yangi nom kiriting:',
+                showInput: true,
+                defaultValue: sec.name,
+                onConfirm: (val) => {
+                    if (val) {
+                        sec.name = val;
+                        saveState();
+                        showToast('Bo\'lim nomi yangilandi!');
+                    }
+                }
+            });
+        }
+
+        function deleteSectionPrompt(secId) {
+            if (appState.sections.length <= 1) {
+                showToast('Kamida bitta bo\'lim qolishi shart!', 'warning');
+                return;
+            }
+            const sec = appState.sections.find(s => s.id === secId);
+            const count = appState.words.filter(w => w.sectionId === secId).length;
+            openDialog({
+                title: 'Bo\'limni o\'chirish',
+                message: `"${sec.name}" bo'limi va uning ichidagi ${count} ta sinonim guruhi o'chiriladi. Davom etasizmi?`,
+                isDanger: true,
+                onConfirm: () => {
+                    appState.sections = appState.sections.filter(s => s.id !== secId);
+                    appState.words = appState.words.filter(w => w.sectionId !== secId);
+                    appState.selectedSectionIds = appState.selectedSectionIds.filter(id => id !== secId);
+                    saveState();
+                    showToast('Bo\'lim o\'chirildi', 'info');
+                }
+            });
+        }
+
+        // ==================== 8. SETTINGS, SCORE & BACKUP ====================
+        function toggleSiteSound(enabled) {
+            appState.soundEnabled = enabled;
+            saveState();
+            showToast(enabled ? 'Sayt ovozlari yoqildi' : 'Sayt ovozlari o\'chirildi', 'info');
+        }
+
+        function promptEditScore() {
+            openDialog({
+                title: 'O\'yinchi balini tahrirlash',
+                message: 'Yangi umumiy ball qiymatini kiriting:',
+                showInput: true,
+                defaultValue: String(appState.globalScore),
+                onConfirm: (val) => {
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num) && num >= 0) {
+                        appState.globalScore = num;
+                        saveState();
+                        showToast('Umumiy ball yangilandi!');
+                    }
+                }
+            });
+        }
+
+        function resetGlobalScore() {
+            appState.globalScore = 0;
+            saveState();
+            showToast('Ball 0 ga tushirildi', 'info');
+        }
+
+        function exportBackupJSON() {
+            const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `SinonimMaster_Nusxa_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Zaxira nusxa fayli yuklab olindi!');
+        }
+
+        function importBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data.sections) && Array.isArray(data.words)) {
+                        data.words = data.words.map(normalizeWordGroup);
+                        appState = data;
+                        saveState();
+                        showToast('Zaxira nusxa muvaffaqiyatli yuklandi!');
+                    } else {
+                        showToast('Fayl tuzilmasi noto\'g\'ri!', 'error');
+                    }
+                } catch (err) {
+                    showToast('JSON faylni o\'qishda xatolik!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmRestoreDefaultData() {
+            openDialog({
+                title: 'Standart ma\'lumotlarni tiklash',
+                message: 'Barcha o\'zgarishlar o\'chirilib, SinonimMaster dastlabki 14 ta sinonim guruhiga qaytariladi. Davom etasizmi?',
+                isDanger: true,
+                onConfirm: () => {
+                    appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                    saveState();
+                    showToast('Dastlabki baza tiklandi!');
+                }
+            });
+        }
+
+        // ==================== 9. HELPERS & INIT ====================
+        function escapeHTML(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function escapeAttr(str) {
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+        function capitalizeFirst(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('sinonim_admin_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            refreshAllViews();
+        });
+    </script>
+</body>
+</html>
