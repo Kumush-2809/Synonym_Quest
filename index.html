@@ -826,22 +826,59 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // 0. FIREBASE INITIALIZATION & AUTH STATE
+        // 0. FIREBASE & HYBRID STORAGE INITIALIZATION
         // ==========================================
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'sinonim-master-default';
         let firebaseApp = null;
         let auth = null;
         let db = null;
-        let currentUser = null; // Real registered user (non-anonymous) or null
-        let firebaseAuthUser = null; // Any Firebase auth session (including anonymous for public reads)
+        let isCloudAvailable = false;
+        let currentUser = null; // Logged-in user object { uid, email, displayName }
+        let firebaseAuthUser = null;
+
+        // Local fallback keys for seamless offline / standalone browser usage
+        const LOCAL_USERS_DB_KEY = 'sinonim_master_users_db_v1';
+        const LOCAL_SESSION_KEY = 'sinonim_master_active_user_v1';
+        const LOCAL_SHARED_PACKS_KEY = 'sinonim_master_shared_packs_v1';
 
         try {
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 const firebaseConfig = JSON.parse(__firebase_config);
-                firebaseApp = initializeApp(firebaseConfig);
-                auth = getAuth(firebaseApp);
-                db = getFirestore(firebaseApp);
+                if (firebaseConfig && firebaseConfig.apiKey) {
+                    firebaseApp = initializeApp(firebaseConfig);
+                    auth = getAuth(firebaseApp);
+                    db = getFirestore(firebaseApp);
+                    isCloudAvailable = true;
+                }
             }
+        } catch (err) {
+            console.warn("Bulutli ulanish topilmadi, mahalliy rejim faollashtirildi.");
+            isCloudAvailable = false;
+        }
+
+        function getLocalUsersDB() {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_USERS_DB_KEY) || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveLocalUsersDB(usersObj) {
+            localStorage.setItem(LOCAL_USERS_DB_KEY, JSON.stringify(usersObj));
+        }
+
+        function getLocalSharedPacksDB() {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_SHARED_PACKS_KEY) || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveLocalSharedPacksDB(packsObj) {
+            localStorage.setItem(LOCAL_SHARED_PACKS_KEY, JSON.stringify(packsObj));
+        }
         } catch (err) {
             console.error("Firebase init error:", err);
         }
@@ -1012,95 +1049,73 @@
         }
 
         async function syncUserProfileToCloud() {
-            if (!db || !currentUser) return;
-            try {
-                const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'vocabulary');
-                await setDoc(userDocRef, {
-                    globalScore: appState.globalScore || 0,
-                    sections: appState.sections,
-                    selectedSectionIds: appState.selectedSectionIds,
-                    words: appState.words,
-                    updatedAt: Date.now()
-                }, { merge: true });
-            } catch (e) {
-                console.error('Bulutga saqlashda xatolik:', e);
+            if (!currentUser) return;
+            const payload = {
+                globalScore: appState.globalScore || 0,
+                sections: appState.sections,
+                selectedSectionIds: appState.selectedSectionIds,
+                words: appState.words,
+                updatedAt: Date.now()
+            };
+
+            if (isCloudAvailable && db) {
+                try {
+                    const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'vocabulary');
+                    await setDoc(userDocRef, payload, { merge: true });
+                } catch (e) {
+                    console.error('Bulutga saqlashda xatolik:', e);
+                }
+            } else {
+                // Save to local user account record
+                const usersDb = getLocalUsersDB();
+                const emailKey = currentUser.email.toLowerCase();
+                if (usersDb[emailKey]) {
+                    usersDb[emailKey].vocabulary = payload;
+                    saveLocalUsersDB(usersDb);
+                }
             }
         }
 
-        async function loadUserProfileFromCloud(uid) {
-            if (!db || !uid) return;
-            try {
-                const userDocRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'vocabulary');
-                const snap = await getDoc(userDocRef);
-                if (snap.exists()) {
-                    const cloudData = snap.data();
-                    if (Array.isArray(cloudData.sections) && Array.isArray(cloudData.words)) {
-                        appState.sections = cloudData.sections;
-                        appState.words = cloudData.words.map(normalizeWordGroup);
-                        appState.selectedSectionIds = cloudData.selectedSectionIds || cloudData.sections.map(s => s.id);
-                        appState.globalScore = cloudData.globalScore || appState.globalScore;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-                        refreshAllViews();
-                        showToast('Shaxsiy bazangiz bulutdan yuklandi!', 'info');
+        async function loadUserProfileFromCloud(uid, email = null) {
+            if (isCloudAvailable && db && uid) {
+                try {
+                    const userDocRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'vocabulary');
+                    const snap = await getDoc(userDocRef);
+                    if (snap.exists()) {
+                        const cloudData = snap.data();
+                        if (Array.isArray(cloudData.sections) && Array.isArray(cloudData.words)) {
+                            appState.sections = cloudData.sections;
+                            appState.words = cloudData.words.map(normalizeWordGroup);
+                            appState.selectedSectionIds = cloudData.selectedSectionIds || cloudData.sections.map(s => s.id);
+                            appState.globalScore = cloudData.globalScore || appState.globalScore;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+                            refreshAllViews();
+                            showToast('Shaxsiy bazangiz yuklandi!', 'info');
+                        }
+                    } else {
+                        await syncUserProfileToCloud();
                     }
+                } catch (e) {
+                    console.error('Yuklashda xatolik:', e);
+                }
+            } else if (email) {
+                const usersDb = getLocalUsersDB();
+                const record = usersDb[email.toLowerCase()];
+                if (record && record.vocabulary && Array.isArray(record.vocabulary.sections)) {
+                    appState.sections = record.vocabulary.sections;
+                    appState.words = record.vocabulary.words.map(normalizeWordGroup);
+                    appState.selectedSectionIds = record.vocabulary.selectedSectionIds || record.sections.map(s => s.id);
+                    appState.globalScore = record.vocabulary.globalScore || 0;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+                    refreshAllViews();
+                    showToast('Shaxsiy kabinet ma\'lumotlari yuklandi!', 'info');
                 } else {
-                    // First login: push current local words to their new cloud account
                     await syncUserProfileToCloud();
                 }
-            } catch (e) {
-                console.error('Bulutdan yuklashda xatolik:', e);
             }
         }
-
-        function refreshAllViews() {
-            updateHeaderStats();
-            renderGameSectionFilters();
-            populateSectionDropdowns();
-            renderWordsList();
-            renderSectionsList();
-            renderShareSectionChecklist();
-        }
-
-        // ==========================================
-        // 1B. AUTHENTICATION (LOGIN / REGISTER / LOGOUT)
-        // ==========================================
-        function openAuthModal(mode = 'login') {
-            switchAuthMode(mode);
-            document.getElementById('authErrorBox').classList.add('hidden');
-            document.getElementById('authModal').classList.remove('hidden');
-            lucide.createIcons();
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.add('hidden');
-        }
-
-        function switchAuthMode(mode) {
-            document.getElementById('authModeInput').value = mode;
-            const isReg = mode === 'register';
-            document.getElementById('authNameField').classList.toggle('hidden', !isReg);
-            document.getElementById('authFullName').required = isReg;
-
-            document.getElementById('authModalTitle').textContent = isReg ? 'Ro\'yxatdan o\'tish' : 'Tizimga kirish';
-            document.getElementById('authSubmitBtn').textContent = isReg ? 'Hisob yaratish' : 'Kirish';
-
-            const loginTab = document.getElementById('authTabLogin');
-            const regTab = document.getElementById('authTabRegister');
-            if (isReg) {
-                regTab.className = 'py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition';
-                loginTab.className = 'py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
-            } else {
-                loginTab.className = 'py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition';
-                regTab.className = 'py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
-            }
-        }
-
         async function handleAuthSubmit(e) {
             e.preventDefault();
-            if (!auth) {
-                showToast('Server bilan ulanish mavjud emas', 'error');
-                return;
-            }
             const mode = document.getElementById('authModeInput').value;
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
@@ -1113,19 +1128,64 @@
             submitBtn.textContent = 'Kuting...';
 
             try {
-                if (mode === 'register') {
-                    const cred = await createUserWithEmailAndPassword(auth, email, password);
-                    if (fullName) {
-                        await updateProfile(cred.user, { displayName: fullName });
+                if (isCloudAvailable && auth) {
+                    if (mode === 'register') {
+                        const cred = await createUserWithEmailAndPassword(auth, email, password);
+                        if (fullName) {
+                            await updateProfile(cred.user, { displayName: fullName });
+                        }
+                        showToast(`Xush kelibsiz, ${fullName || email}!`);
+                    } else {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        showToast('Tizimga muvaffaqiyatli kirdingiz!');
                     }
-                    showToast(`Xush kelibsiz, ${fullName || email}!`);
                 } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    showToast('Tizimga muvaffaqiyatli kirdingiz!');
+                    // Local / Standalone Authentication Engine
+                    const usersDb = getLocalUsersDB();
+                    const emailKey = email.toLowerCase();
+
+                    if (mode === 'register') {
+                        if (usersDb[emailKey]) {
+                            throw { customMessage: 'Bu elektron pochta allaqachon ro\'yxatdan o\'tgan.' };
+                        }
+                        if (!fullName) {
+                            throw { customMessage: 'Iltimos, ism va familiyangizni kiriting.' };
+                        }
+                        const newUid = 'user-' + Date.now();
+                        usersDb[emailKey] = {
+                            uid: newUid,
+                            email: email,
+                            displayName: fullName,
+                            password: btoa(encodeURIComponent(password)),
+                            vocabulary: null
+                        };
+                        saveLocalUsersDB(usersDb);
+
+                        currentUser = { uid: newUid, email: email, displayName: fullName };
+                        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(currentUser));
+                        await syncUserProfileToCloud();
+                        updateAuthHeaderUI();
+                        showToast(`Xush kelibsiz, ${fullName}!`);
+                    } else {
+                        const existingUser = usersDb[emailKey];
+                        if (!existingUser || existingUser.password !== btoa(encodeURIComponent(password))) {
+                            throw { customMessage: 'Email yoki parol noto\'g\'ri.' };
+                        }
+                        currentUser = {
+                            uid: existingUser.uid,
+                            email: existingUser.email,
+                            displayName: existingUser.displayName
+                        };
+                        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(currentUser));
+                        updateAuthHeaderUI();
+                        await loadUserProfileFromCloud(currentUser.uid, currentUser.email);
+                        loadMySharedPacks();
+                        showToast(`Xush kelibsiz, ${currentUser.displayName}!`);
+                    }
                 }
                 closeAuthModal();
             } catch (err) {
-                let msg = 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
+                let msg = err.customMessage || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
                 if (err.code === 'auth/email-already-in-use') msg = 'Bu elektron pochta allaqachon ro\'yxatdan o\'tgan.';
                 else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') msg = 'Email yoki parol noto\'g\'ri.';
                 else if (err.code === 'auth/weak-password') msg = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.';
@@ -1138,10 +1198,15 @@
         }
 
         async function handleLogout() {
-            if (!auth) return;
             try {
-                await signOut(auth);
-                await signInAnonymously(auth);
+                if (isCloudAvailable && auth) {
+                    await signOut(auth);
+                    await signInAnonymously(auth);
+                } else {
+                    localStorage.removeItem(LOCAL_SESSION_KEY);
+                    currentUser = null;
+                    updateAuthHeaderUI();
+                }
                 showToast('Hisobdan chiqdingiz', 'info');
             } catch (e) {
                 console.error(e);
@@ -1155,11 +1220,12 @@
 
             if (currentUser) {
                 const name = currentUser.displayName || currentUser.email.split('@')[0];
+                const statusText = isCloudAvailable ? 'Bulutga ulangan' : 'Shaxsiy kabinet';
                 container.innerHTML = `
                     <div class="flex items-center gap-2 bg-slate-100 pl-3 pr-1.5 py-1 rounded-2xl border border-slate-200">
                         <div class="text-right">
                             <span class="block text-xs font-extrabold text-slate-800 leading-tight">${escapeHTML(name)}</span>
-                            <span class="block text-[10px] text-emerald-600 font-semibold">Bulutga ulangan</span>
+                            <span class="block text-[10px] text-emerald-600 font-semibold">${statusText}</span>
                         </div>
                         <button onclick="handleLogout()" title="Hisobdan chiqish"
                             class="p-2 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 transition">
@@ -1179,520 +1245,6 @@
                 if (shareNotice) shareNotice.classList.remove('hidden');
                 if (shareForm) shareForm.classList.add('opacity-50', 'pointer-events-none');
             }
-            lucide.createIcons();
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            const colors = {
-                success: 'bg-emerald-600 text-white',
-                error: 'bg-rose-600 text-white',
-                info: 'bg-slate-800 text-white',
-                warning: 'bg-amber-500 text-white'
-            };
-            toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-2xl shadow-lg text-sm font-semibold flex items-center gap-2.5 animate-pop pointer-events-auto`;
-            toast.innerHTML = `<span>${message}</span>`;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-                toast.style.transition = 'all 0.25s ease';
-                setTimeout(() => toast.remove(), 250);
-            }, 2800);
-        }
-
-        function openCustomDialog({ title, message, showInput = false, defaultValue = '', confirmText = 'Tasdiqlash', isDanger = false, onConfirm }) {
-            const modal = document.getElementById('customDialogModal');
-            document.getElementById('dialogTitle').textContent = title;
-            document.getElementById('dialogMessage').textContent = message;
-            const input = document.getElementById('dialogInput');
-            if (showInput) {
-                input.classList.remove('hidden');
-                input.value = defaultValue;
-            } else {
-                input.classList.add('hidden');
-            }
-
-            const confirmBtn = document.getElementById('dialogConfirmBtn');
-            confirmBtn.textContent = confirmText;
-            confirmBtn.className = isDanger
-                ? 'px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-sm hover:bg-rose-700 transition'
-                : 'px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition';
-
-            modal.classList.remove('hidden');
-            if (showInput) input.focus();
-
-            const cleanup = () => {
-                modal.classList.add('hidden');
-                confirmBtn.onclick = null;
-                document.getElementById('dialogCancelBtn').onclick = null;
-            };
-
-            document.getElementById('dialogCancelBtn').onclick = cleanup;
-            confirmBtn.onclick = () => {
-                const val = input.value.trim();
-                cleanup();
-                if (onConfirm) onConfirm(val);
-            };
-        }
-
-        function updateHeaderStats() {
-            document.getElementById('totalWordsBadge').textContent = appState.words.length;
-            document.getElementById('totalSectionsBadge').textContent = appState.sections.length;
-            document.getElementById('globalScoreDisplay').textContent = appState.globalScore;
-        }
-
-        // ==========================================
-        // 3B. WEB AUDIO SOUND EFFECTS ENGINE
-        // ==========================================
-        let audioCtx = null;
-
-        function toggleSound() {
-            appState.soundEnabled = !appState.soundEnabled;
-            saveState();
-            updateSoundIcons();
-            showToast(appState.soundEnabled ? 'Ovoz effektlari yoqildi' : 'Ovoz effektlari o\'chirildi', 'info');
-        }
-
-        function updateSoundIcons() {
-            document.querySelectorAll('.sound-icon').forEach(icon => {
-                icon.setAttribute('data-lucide', appState.soundEnabled ? 'volume-2' : 'volume-x');
-            });
-            lucide.createIcons();
-        }
-
-        function playSound(type) {
-            if (!appState.soundEnabled) return;
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                const now = audioCtx.currentTime;
-                if (type === 'correct') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.08);
-                    gain.gain.setValueAtTime(0.12, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                } else if (type === 'wrong') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(220, now);
-                    osc.frequency.setValueAtTime(165, now + 0.1);
-                    gain.gain.setValueAtTime(0.14, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-                    osc.start(now);
-                    osc.stop(now + 0.28);
-                } else if (type === 'win') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.1);
-                    osc.frequency.setValueAtTime(783.99, now + 0.2);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-                    osc.start(now);
-                    osc.stop(now + 0.45);
-                }
-            } catch (e) {
-                // Ignore audio errors on restricted devices
-            }
-        }
-
-        // ==========================================
-        // 4. SECTIONS ("BO'LIMLAR") MANAGEMENT
-        // ==========================================
-        const COLOR_BADGES = {
-            indigo: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-            teal: 'bg-teal-100 text-teal-700 border-teal-200',
-            amber: 'bg-amber-100 text-amber-700 border-amber-200',
-            rose: 'bg-rose-100 text-rose-700 border-rose-200',
-            purple: 'bg-purple-100 text-purple-700 border-purple-200'
-        };
-
-        const COLOR_DOTS = {
-            indigo: 'bg-indigo-500',
-            teal: 'bg-teal-500',
-            amber: 'bg-amber-500',
-            rose: 'bg-rose-500',
-            purple: 'bg-purple-500'
-        };
-
-        function selectSectionColor(color) {
-            selectedNewSectionColor = color;
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                if (btn.dataset.color === color) {
-                    btn.classList.add('ring-2', 'ring-offset-2', `ring-${color}-500`);
-                } else {
-                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500', 'ring-teal-500', 'ring-amber-500', 'ring-rose-500', 'ring-purple-500');
-                }
-            });
-        }
-
-        function handleAddSection(e) {
-            e.preventDefault();
-            const input = document.getElementById('newSectionName');
-            const name = input.value.trim();
-            if (!name) return;
-
-            const newSec = {
-                id: 'sec-' + Date.now(),
-                name: name,
-                color: selectedNewSectionColor
-            };
-            appState.sections.push(newSec);
-            appState.selectedSectionIds.push(newSec.id);
-            saveState();
-
-            input.value = '';
-            renderSectionsList();
-            showToast(`"${name}" bo'limi yaratildi!`);
-        }
-
-        function quickAddSectionPrompt() {
-            openCustomDialog({
-                title: 'Yangi bo\'lim yaratish',
-                message: 'Yangi bo\'lim nomini kiriting (masalan: "2-dars" yoki "Sifatlar"):',
-                showInput: true,
-                confirmText: 'Yaratish',
-                onConfirm: (val) => {
-                    if (!val) return;
-                    const newSec = { id: 'sec-' + Date.now(), name: val, color: 'indigo' };
-                    appState.sections.push(newSec);
-                    appState.selectedSectionIds.push(newSec.id);
-                    saveState();
-                    populateSectionDropdowns(newSec.id);
-                    showToast(`"${val}" bo'limi qo'shildi!`);
-                }
-            });
-        }
-
-        function renameSection(secId) {
-            const sec = appState.sections.find(s => s.id === secId);
-            if (!sec) return;
-            openCustomDialog({
-                title: 'Bo\'lim nomini o\'zgartirish',
-                message: 'Yangi nomni kiriting:',
-                showInput: true,
-                defaultValue: sec.name,
-                confirmText: 'Saqlash',
-                onConfirm: (newName) => {
-                    if (newName) {
-                        sec.name = newName;
-                        saveState();
-                        renderSectionsList();
-                        showToast('Bo\'lim nomi yangilandi');
-                    }
-                }
-            });
-        }
-
-        function deleteSection(secId) {
-            if (appState.sections.length <= 1) {
-                showToast('Kamida bitta bo\'lim qolishi shart!', 'warning');
-                return;
-            }
-            const sec = appState.sections.find(s => s.id === secId);
-            const wordCount = appState.words.filter(w => w.sectionId === secId).length;
-
-            openCustomDialog({
-                title: 'Bo\'limni o\'chirish',
-                message: `"${sec.name}" bo'limini va uning ichidagi ${wordCount} ta so'zni o'chirishga ishonchingiz komilmi?`,
-                confirmText: 'Ha, o\'chirish',
-                isDanger: true,
-                onConfirm: () => {
-                    appState.sections = appState.sections.filter(s => s.id !== secId);
-                    appState.words = appState.words.filter(w => w.sectionId !== secId);
-                    appState.selectedSectionIds = appState.selectedSectionIds.filter(id => id !== secId);
-                    saveState();
-                    renderSectionsList();
-                    showToast('Bo\'lim o\'chirildi', 'info');
-                }
-            });
-        }
-
-        function switchTab(tabName) {
-            // Stop any running game timers when leaving games tab
-            if (tabName !== 'games' && currentGame.timerInterval) {
-                clearInterval(currentGame.timerInterval);
-            }
-
-            ['games', 'words', 'sections', 'share'].forEach(t => {
-                const view = document.getElementById(`view-${t}`);
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === tabName) {
-                    view.classList.remove('hidden');
-                    btn.classList.add('bg-white', 'text-indigo-700', 'shadow-sm');
-                    btn.classList.remove('text-slate-600');
-                } else {
-                    view.classList.add('hidden');
-                    btn.classList.remove('bg-white', 'text-indigo-700', 'shadow-sm');
-                    btn.classList.add('text-slate-600');
-                }
-            });
-
-            if (tabName === 'games') {
-                renderGameSectionFilters();
-            } else if (tabName === 'words') {
-                populateSectionDropdowns();
-                renderWordsList();
-            } else if (tabName === 'sections') {
-                renderSectionsList();
-            } else if (tabName === 'share') {
-                renderShareSectionChecklist();
-                loadMySharedPacks();
-            }
-            lucide.createIcons();
-        }
-
-        function openSectionInWords(secId) {
-            switchTab('words');
-            document.getElementById('filterWordsBySection').value = secId;
-            renderWordsList();
-        }
-
-        function renderSectionsList() {
-            const container = document.getElementById('sectionsGridContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            appState.sections.forEach(sec => {
-                const count = appState.words.filter(w => w.sectionId === sec.id).length;
-                const dotColor = COLOR_DOTS[sec.color] || 'bg-indigo-500';
-                const badgeStyle = COLOR_BADGES[sec.color] || COLOR_BADGES.indigo;
-
-                const card = document.createElement('div');
-                card.className = 'p-4 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-white hover:shadow-md transition flex flex-col justify-between gap-3';
-                card.innerHTML = `
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0"></span>
-                            <h4 class="font-bold text-slate-800 text-base">${escapeHTML(sec.name)}</h4>
-                        </div>
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeStyle} shrink-0">
-                            ${count} ta so'z
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-200/60">
-                        <button onclick="openSectionInWords('${sec.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-                            <span>So'zlarni ko'rish</span>
-                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <div class="flex items-center gap-1">
-                            <button onclick="quickShareSection('${sec.id}')" class="p-1.5 rounded-lg text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition" title="Kod / Havola orqali ulashish">
-                                <i data-lucide="share-2" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="renameSection('${sec.id}')" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition" title="Nomini o'zgartirish">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteSection('${sec.id}')" class="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition" title="O'chirish">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        // ==========================================
-        // 5. WORDS & DYNAMIC SYNONYM FIELDS MANAGEMENT
-        // ==========================================
-        function populateSectionDropdowns(preselectId = null) {
-            const wordSecSelect = document.getElementById('wordSectionSelect');
-            const filterSecSelect = document.getElementById('filterWordsBySection');
-            if (!wordSecSelect || !filterSecSelect) return;
-
-            const currentWordVal = preselectId || wordSecSelect.value;
-            const currentFilterVal = filterSecSelect.value || 'all';
-
-            wordSecSelect.innerHTML = appState.sections.map(sec =>
-                `<option value="${sec.id}">${escapeHTML(sec.name)}</option>`
-            ).join('');
-
-            if (currentWordVal && appState.sections.some(s => s.id === currentWordVal)) {
-                wordSecSelect.value = currentWordVal;
-            }
-
-            filterSecSelect.innerHTML = `<option value="all">Barcha bo'limlar (${appState.words.length})</option>` +
-                appState.sections.map(sec => {
-                    const cnt = appState.words.filter(w => w.sectionId === sec.id).length;
-                    return `<option value="${sec.id}">${escapeHTML(sec.name)} (${cnt})</option>`;
-                }).join('');
-
-            if (currentFilterVal === 'all' || appState.sections.some(s => s.id === currentFilterVal)) {
-                filterSecSelect.value = currentFilterVal;
-            }
-        }
-
-        function initDynamicSynonymInputs(values = ['', '']) {
-            const container = document.getElementById('dynamicSynonymsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            const list = (Array.isArray(values) && values.length >= 2) ? values : ['', ''];
-            list.forEach(val => addSynonymInputField(val, false));
-        }
-
-        function addSynonymInputField(value = '', shouldFocus = true) {
-            const container = document.getElementById('dynamicSynonymsContainer');
-            const index = container.children.length + 1;
-
-            const row = document.createElement('div');
-            row.className = 'synonym-input-row flex items-center gap-2 animate-pop';
-            row.innerHTML = `
-                <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 text-xs font-extrabold flex items-center justify-center shrink-0 row-num">
-                    ${index}
-                </span>
-                <input type="text" value="${escapeAttr(value)}" placeholder="${index}-sinonim so'z (inglizcha)" autocomplete="off"
-                    onpaste="handleSynonymPaste(event, this)"
-                    class="synonym-field flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-sm font-semibold transition">
-                <button type="button" onclick="removeSynonymInputField(this)" title="Olib tashlash"
-                    class="remove-syn-btn p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            `;
-            container.appendChild(row);
-            updateSynonymInputCounter();
-            lucide.createIcons();
-
-            if (shouldFocus) {
-                const input = row.querySelector('input');
-                input.focus();
-            }
-        }
-
-        function removeSynonymInputField(btn) {
-            const container = document.getElementById('dynamicSynonymsContainer');
-            if (container.children.length <= 2) {
-                showToast('Har bir guruhda kamida 2 ta sinonim bo\'lishi kerak!', 'warning');
-                return;
-            }
-            btn.closest('.synonym-input-row').remove();
-            updateSynonymInputCounter();
-        }
-
-        function updateSynonymInputCounter() {
-            const rows = document.querySelectorAll('#dynamicSynonymsContainer .synonym-input-row');
-            rows.forEach((row, i) => {
-                row.querySelector('.row-num').textContent = i + 1;
-                const removeBtn = row.querySelector('.remove-syn-btn');
-                if (rows.length <= 2) {
-                    removeBtn.classList.add('opacity-30', 'pointer-events-none');
-                } else {
-                    removeBtn.classList.remove('opacity-30', 'pointer-events-none');
-                }
-            });
-            const counter = document.getElementById('synonymInputCounter');
-            if (counter) counter.textContent = `${rows.length} ta maydon`;
-        }
-
-        // Smart Paste: If user pastes "Big, Huge, Enormous", split into separate fields automatically!
-        function handleSynonymPaste(event, inputEl) {
-            const pasted = (event.clipboardData || window.clipboardData).getData('text');
-            if (pasted && (pasted.includes(',') || pasted.includes(';'))) {
-                event.preventDefault();
-                const parts = pasted.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
-                if (parts.length > 0) {
-                    inputEl.value = parts[0];
-                    for (let i = 1; i < parts.length; i++) {
-                        addSynonymInputField(parts[i], false);
-                    }
-                    showToast(`${parts.length} ta sinonim alohida kataklarga ajratildi!`, 'info');
-                }
-            }
-        }
-
-        function handleWordSubmit(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editWordId').value;
-            const sectionId = document.getElementById('wordSectionSelect').value;
-            const uzbek = capitalizeFirst(document.getElementById('uzbekMeaningInput').value.trim());
-
-            const rawInputs = Array.from(document.querySelectorAll('#dynamicSynonymsContainer .synonym-field'))
-                .map(inp => capitalizeFirst(inp.value.trim()))
-                .filter(Boolean);
-
-            // Deduplicate case-insensitively
-            const uniqueSynonyms = [];
-            const seen = new Set();
-            rawInputs.forEach(w => {
-                const low = w.toLowerCase();
-                if (!seen.has(low)) {
-                    seen.add(low);
-                    uniqueSynonyms.push(w);
-                }
-            });
-
-            if (!uzbek) {
-                showToast('O\'zbekcha tarjimani kiriting!', 'warning');
-                return;
-            }
-            if (uniqueSynonyms.length < 2) {
-                showToast('Kamida 2 ta turli inglizcha sinonim kiriting!', 'warning');
-                return;
-            }
-
-            if (editId) {
-                const idx = appState.words.findIndex(w => w.id === editId);
-                if (idx !== -1) {
-                    appState.words[idx] = { ...appState.words[idx], sectionId, uzbek, synonyms: uniqueSynonyms };
-                    showToast(`Sinonimlar guruhi yangilandi (${uniqueSynonyms.length} ta so'z)!`);
-                }
-                resetWordForm();
-            } else {
-                const newGroup = {
-                    id: 'w-' + Date.now(),
-                    sectionId,
-                    uzbek,
-                    synonyms: uniqueSynonyms
-                };
-                appState.words.unshift(newGroup);
-                if (!appState.selectedSectionIds.includes(sectionId)) {
-                    appState.selectedSectionIds.push(sectionId);
-                }
-                showToast(`${uniqueSynonyms.length} ta sinonimdan iborat yangi guruh qo'shildi!`);
-                document.getElementById('uzbekMeaningInput').value = '';
-                initDynamicSynonymInputs(['', '']);
-                document.getElementById('uzbekMeaningInput').focus();
-            }
-
-            saveState();
-            renderWordsList();
-        }
-
-        function editWord(wordId) {
-            const w = appState.words.find(item => item.id === wordId);
-            if (!w) return;
-
-            document.getElementById('editWordId').value = w.id;
-            document.getElementById('wordSectionSelect').value = w.sectionId;
-            document.getElementById('uzbekMeaningInput').value = w.uzbek;
-            initDynamicSynonymInputs(w.synonyms);
-
-            document.getElementById('wordFormTitle').textContent = 'Guruhni tahrirlash';
-            document.getElementById('wordSubmitBtn').innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>O\'zgarishlarni saqlash</span>';
-            document.getElementById('cancelEditWordBtn').classList.remove('hidden');
-            lucide.createIcons();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetWordForm() {
-            document.getElementById('editWordId').value = '';
-            document.getElementById('uzbekMeaningInput').value = '';
-            initDynamicSynonymInputs(['', '']);
-            document.getElementById('wordFormTitle').textContent = 'Sinonimlar guruhi qo\'shish';
-            document.getElementById('wordSubmitBtn').innerHTML = '<i data-lucide="save" class="w-4 h-4"></i><span>Guruhni saqlash</span>';
-            document.getElementById('cancelEditWordBtn').classList.add('hidden');
             lucide.createIcons();
         }
 
@@ -2833,7 +2385,7 @@
 
         async function handleCreateSharePack(e) {
             e.preventDefault();
-            if (!db || !currentUser) {
+            if (!currentUser) {
                 openAuthModal('login');
                 showToast('Ulashish uchun avval tizimga kiring!', 'warning');
                 return;
@@ -2873,32 +2425,55 @@
             btn.textContent = 'Saqlanmoqda...';
 
             try {
-                const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
-                const existing = await getDoc(packDocRef);
-                if (existing.exists() && existing.data().creatorId !== currentUser.uid) {
-                    showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
-                    btn.disabled = false;
-                    btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Kalit so\'z va havola yaratish</span>';
-                    lucide.createIcons();
-                    return;
+                const creatorName = currentUser.displayName || currentUser.email.split('@')[0];
+
+                if (isCloudAvailable && db) {
+                    const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
+                    const existing = await getDoc(packDocRef);
+                    if (existing.exists() && existing.data().creatorId !== currentUser.uid) {
+                        showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
+                        return;
+                    }
+
+                    const packData = {
+                        code: rawCode,
+                        codeKey: codeKey,
+                        title: title,
+                        creatorId: currentUser.uid,
+                        creatorName: creatorName,
+                        maxUses: maxUsers,
+                        usesCount: existing.exists() ? (existing.data().usesCount || 0) : 0,
+                        usedBy: existing.exists() ? (existing.data().usedBy || []) : [],
+                        sections: sectionsToShare,
+                        words: wordsToShare,
+                        createdAt: Date.now()
+                    };
+
+                    await setDoc(packDocRef, packData);
+                } else {
+                    const packsDb = getLocalSharedPacksDB();
+                    const existing = packsDb[codeKey];
+                    if (existing && existing.creatorId !== currentUser.uid) {
+                        showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
+                        return;
+                    }
+
+                    packsDb[codeKey] = {
+                        code: rawCode,
+                        codeKey: codeKey,
+                        title: title,
+                        creatorId: currentUser.uid,
+                        creatorName: creatorName,
+                        maxUses: maxUsers,
+                        usesCount: existing ? (existing.usesCount || 0) : 0,
+                        usedBy: existing ? (existing.usedBy || []) : [],
+                        sections: sectionsToShare,
+                        words: wordsToShare,
+                        createdAt: Date.now()
+                    };
+                    saveLocalSharedPacksDB(packsDb);
                 }
 
-                const creatorName = currentUser.displayName || currentUser.email.split('@')[0];
-                const packData = {
-                    code: rawCode,
-                    codeKey: codeKey,
-                    title: title,
-                    creatorId: currentUser.uid,
-                    creatorName: creatorName,
-                    maxUses: maxUsers,
-                    usesCount: existing.exists() ? (existing.data().usesCount || 0) : 0,
-                    usedBy: existing.exists() ? (existing.data().usedBy || []) : [],
-                    sections: sectionsToShare,
-                    words: wordsToShare,
-                    createdAt: Date.now()
-                };
-
-                await setDoc(packDocRef, packData);
                 showToast(`"${rawCode}" kalit so'zi yaratildi! (${wordsToShare.length} ta guruh)`);
                 document.getElementById('sharePackTitle').value = '';
                 document.getElementById('shareCustomCode').value = '';
@@ -2917,7 +2492,7 @@
             const container = document.getElementById('mySharedPacksList');
             if (!container) return;
 
-            if (!db || !currentUser) {
+            if (!currentUser) {
                 container.innerHTML = `
                     <div class="text-center py-10 px-4 text-slate-500 text-sm">
                         O'zingiz yaratgan kalit so'zlar ro'yxatini ko'rish uchun tizimga kiring.
@@ -2929,15 +2504,24 @@
             container.innerHTML = `<div class="text-center py-8 text-xs font-semibold text-slate-400">Yuklanmoqda...</div>`;
 
             try {
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shared_packs');
-                const snap = await getDocs(colRef);
                 const myPacks = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.creatorId === currentUser.uid) {
-                        myPacks.push(data);
-                    }
-                });
+                if (isCloudAvailable && db) {
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shared_packs');
+                    const snap = await getDocs(colRef);
+                    snap.forEach(d => {
+                        const data = d.data();
+                        if (data.creatorId === currentUser.uid) {
+                            myPacks.push(data);
+                        }
+                    });
+                } else {
+                    const packsDb = getLocalSharedPacksDB();
+                    Object.values(packsDb).forEach(data => {
+                        if (data.creatorId === currentUser.uid) {
+                            myPacks.push(data);
+                        }
+                    });
+                }
                 myPacks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 if (myPacks.length === 0) {
@@ -3002,7 +2586,7 @@
         }
 
         async function deleteSharedPack(codeKey) {
-            if (!db || !currentUser) return;
+            if (!currentUser) return;
             openCustomDialog({
                 title: 'Kalit so\'zni o\'chirish',
                 message: 'Ushbu kalit so\'z o\'chirilsa, yangi o\'quvchilar undan foydalana olmaydi. Davom etasizmi?',
@@ -3010,7 +2594,13 @@
                 isDanger: true,
                 onConfirm: async () => {
                     try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey));
+                        if (isCloudAvailable && db) {
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey));
+                        } else {
+                            const packsDb = getLocalSharedPacksDB();
+                            delete packsDb[codeKey];
+                            saveLocalSharedPacksDB(packsDb);
+                        }
                         showToast('Kalit so\'z o\'chirildi', 'info');
                         loadMySharedPacks();
                     } catch (e) {
@@ -3032,10 +2622,6 @@
                 showToast('Iltimos, kalit so\'z yoki havolani kiriting!', 'warning');
                 return;
             }
-            if (!db || !firebaseAuthUser) {
-                showToast('Serverga ulanilmoqda, biroz kuting...', 'info');
-                return;
-            }
 
             const btn = document.getElementById('quickClaimBtn');
             if (btn) {
@@ -3044,15 +2630,24 @@
             }
 
             try {
-                const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
-                const snap = await getDoc(packDocRef);
+                let pack = null;
+                let packDocRef = null;
+                let packsDb = null;
 
-                if (!snap.exists()) {
+                if (isCloudAvailable && db && firebaseAuthUser) {
+                    packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
+                    const snap = await getDoc(packDocRef);
+                    if (snap.exists()) pack = snap.data();
+                } else {
+                    packsDb = getLocalSharedPacksDB();
+                    if (packsDb[codeKey]) pack = packsDb[codeKey];
+                }
+
+                if (!pack) {
                     showToast('Bunday kalit so\'z topilmadi. Tekshirib qayta kiriting!', 'error');
                     return;
                 }
 
-                const pack = snap.data();
                 const claimerId = getClaimerIdentifier();
                 const usedBy = Array.isArray(pack.usedBy) ? pack.usedBy : [];
                 const alreadyClaimed = usedBy.includes(claimerId);
@@ -3065,10 +2660,16 @@
 
                 // Increment usage counter if new claimer
                 if (!alreadyClaimed) {
-                    await updateDoc(packDocRef, {
-                        usesCount: (pack.usesCount || 0) + 1,
-                        usedBy: [...usedBy, claimerId]
-                    });
+                    if (isCloudAvailable && packDocRef) {
+                        await updateDoc(packDocRef, {
+                            usesCount: (pack.usesCount || 0) + 1,
+                            usedBy: [...usedBy, claimerId]
+                        });
+                    } else if (packsDb) {
+                        packsDb[codeKey].usesCount = (pack.usesCount || 0) + 1;
+                        packsDb[codeKey].usedBy = [...usedBy, claimerId];
+                        saveLocalSharedPacksDB(packsDb);
+                    }
                 }
 
                 // Import shared sections & words into student's local/cloud vocabulary
@@ -3147,11 +2748,9 @@
             renderGameSectionFilters();
             populateSectionDropdowns();
             initDynamicSynonymInputs(['', '']);
-            updateAuthHeaderUI();
             lucide.createIcons();
 
-            // Authenticate Firebase first (Custom Token -> Anonymous fallback), then handle URL ?code=
-            if (auth) {
+            if (isCloudAvailable && auth) {
                 try {
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(auth, __initial_auth_token);
@@ -3174,16 +2773,37 @@
                         updateAuthHeaderUI();
                     }
 
-                    // Auto-detect ?code=XYZ in URL on first load
                     const urlParams = new URLSearchParams(window.location.search);
                     const sharedCodeParam = urlParams.get('code');
                     if (sharedCodeParam && user) {
                         document.getElementById('quickShareCodeInput').value = sharedCodeParam;
-                        // Clean URL parameter so refreshing doesn't re-import
                         window.history.replaceState({}, document.title, window.location.pathname);
                         await claimSharedPackByCode(sharedCodeParam);
                     }
                 });
+            } else {
+                // Standalone / Local Session Bootstrap
+                try {
+                    const savedSession = localStorage.getItem(LOCAL_SESSION_KEY);
+                    if (savedSession) {
+                        currentUser = JSON.parse(savedSession);
+                    }
+                } catch (e) {
+                    currentUser = null;
+                }
+                updateAuthHeaderUI();
+                if (currentUser) {
+                    await loadUserProfileFromCloud(currentUser.uid, currentUser.email);
+                    loadMySharedPacks();
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedCodeParam = urlParams.get('code');
+                if (sharedCodeParam) {
+                    document.getElementById('quickShareCodeInput').value = sharedCodeParam;
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    await claimSharedPackByCode(sharedCodeParam);
+                }
             }
         });
     </script>
