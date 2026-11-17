@@ -105,29 +105,42 @@
 
                 <!-- Main Navigation Tabs -->
                 <nav class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl overflow-x-auto">
-                    <button onclick="switchTab('games')" id="tab-games" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white text-indigo-700 shadow-sm">
+                    <button onclick="switchTab('games')" id="tab-games" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white text-indigo-700 shadow-sm">
                         <i data-lucide="gamepad-2" class="w-4 h-4"></i>
                         <span>O'yinlar (5 xil)</span>
                     </button>
-                    <button onclick="switchTab('words')" id="tab-words" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
+                    <button onclick="switchTab('words')" id="tab-words" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                         <span>So'zlar qo'shish</span>
                         <span id="totalWordsBadge" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700 font-bold">0</span>
                     </button>
-                    <button onclick="switchTab('sections')" id="tab-sections" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
+                    <button onclick="switchTab('sections')" id="tab-sections" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
                         <i data-lucide="folder-kanban" class="w-4 h-4"></i>
                         <span>Bo'limlar</span>
                         <span id="totalSectionsBadge" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-teal-100 text-teal-700 font-bold">0</span>
                     </button>
+                    <button onclick="switchTab('share')" id="tab-share" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span>Ulashish / Kod olish</span>
+                    </button>
                 </nav>
 
-                <!-- Desktop Stats & Sound -->
-                <div class="hidden sm:flex items-center gap-3">
+                <!-- Desktop Stats, Auth Profile & Sound -->
+                <div class="flex items-center justify-between sm:justify-end gap-2.5">
                     <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm font-bold" title="Umumiy to'plangan ball">
                         <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
                         <span id="globalScoreDisplay">0</span>
                     </div>
-                    <button id="soundToggleDesktop" onclick="toggleSound()" class="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition" title="Ovoz effektlari">
+
+                    <!-- User Account Button / Profile Chip -->
+                    <div id="authHeaderContainer">
+                        <button onclick="openAuthModal('login')" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                            <i data-lucide="user-check" class="w-4 h-4"></i>
+                            <span>Kirish / Ro'yxatdan o'tish</span>
+                        </button>
+                    </div>
+
+                    <button id="soundToggleDesktop" onclick="toggleSound()" class="hidden sm:inline-flex p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition" title="Ovoz effektlari">
                         <i data-lucide="volume-2" class="w-4 h-4 sound-icon"></i>
                     </button>
                 </div>
@@ -140,6 +153,35 @@
 
     <!-- Main Content Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================================= -->
+        <!-- QUICK STUDENT IMPORT BAR (KALIT SO'Z / HAVOLA ORQALI)     -->
+        <!-- ========================================================= -->
+        <div class="mb-6 bg-gradient-to-r from-indigo-600 via-indigo-700 to-teal-600 rounded-3xl p-4 sm:p-5 text-white shadow-md shadow-indigo-100">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+                        <i data-lucide="key-round" class="w-6 h-6 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold tracking-tight">O'qituvchi bergan kalit so'z yoki havola bormi?</h2>
+                        <p class="text-xs text-indigo-100 mt-0.5">Kalit so'zni kiriting — tayyor sinonimlar va tarjimalar bir zumda bazangizga yuklanadi!</p>
+                    </div>
+                </div>
+
+                <form onsubmit="handleQuickCodeClaim(event)" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+                    <div class="relative flex-1 sm:w-64">
+                        <i data-lucide="hash" class="w-4 h-4 text-indigo-300 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="quickShareCodeInput" placeholder="Masalan: IELTS-2026 yoki havola"
+                            class="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-white/95 text-slate-900 placeholder:text-slate-400 text-sm font-bold outline-none focus:ring-2 focus:ring-amber-300 transition">
+                    </div>
+                    <button type="submit" id="quickClaimBtn" class="px-5 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm shadow-sm transition flex items-center justify-center gap-2 shrink-0">
+                        <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                        <span>Yuklab olish</span>
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <!-- ========================================================= -->
         <!-- VIEW 1: GAMES HUB & ACTIVE GAME ARENA                     -->
@@ -322,33 +364,33 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Game Canvas / Board -->
-                <div id="gameBoardContent" class="p-5 sm:p-8 min-h-[420px] flex flex-col justify-center">
-                    <!-- Rendered dynamically by JS for each of the 5 games -->
+                <!-- Dynamic Game Playfield -->
+                <div id="gameBoardContent" class="p-6 sm:p-8 min-h-[380px] flex flex-col justify-center">
+                    <!-- Game-specific UI injected dynamically -->
                 </div>
             </div>
         </section>
 
         <!-- ========================================================= -->
-        <!-- VIEW 2: ADD & MANAGE MULTI-SYNONYM GROUPS + TRANSLATIONS  -->
+        <!-- VIEW 2: ADD & MANAGE WORDS ("SO'ZLAR QO'SHISH")           -->
         <!-- ========================================================= -->
         <section id="view-words" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Left Column: Add / Edit Multi-Synonym Group Form -->
+                <!-- Left Form: Add / Edit Multi-Synonym Group -->
                 <div class="lg:col-span-5">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm sticky top-24">
                         <div class="flex items-center justify-between mb-5">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                    <i data-lucide="book-plus" class="w-5 h-5"></i>
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <i data-lucide="plus-square" class="w-5 h-5"></i>
                                 </div>
                                 <div>
                                     <h2 id="wordFormTitle" class="text-lg font-extrabold text-slate-800">Sinonimlar guruhi qo'shish</h2>
-                                    <p class="text-xs text-slate-500">Bitta ma'no uchun 2, 3, 5 yoki undan ko'p sinonim yozing</p>
+                                    <p class="text-xs text-slate-500">1 ta ma'noga istalgancha sinonim yozing</p>
                                 </div>
                             </div>
-                            <button id="cancelEditWordBtn" onclick="resetWordForm()" class="hidden text-xs font-semibold text-slate-500 hover:text-rose-600 px-2.5 py-1 rounded-lg bg-slate-100">
+                            <button type="button" id="cancelEditWordBtn" onclick="resetWordForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">
                                 Bekor qilish
                             </button>
                         </div>
@@ -356,46 +398,40 @@
                         <form id="wordForm" onsubmit="handleWordSubmit(event)" class="space-y-4">
                             <input type="hidden" id="editWordId" value="">
 
-                            <!-- Section Select -->
+                            <!-- Section Selector -->
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
-                                    <label for="wordSectionSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600">Bo'limni tanlang *</label>
-                                    <button type="button" onclick="quickAddSectionPrompt()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Yangi bo'lim
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Bo'limni tanlang *</label>
+                                    <button type="button" onclick="quickAddSectionPrompt()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                        <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i> Yangi bo'lim
                                     </button>
                                 </div>
-                                <select id="wordSectionSelect" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-sm font-medium transition">
+                                <select id="wordSectionSelect" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-bold text-slate-800">
                                     <!-- Populated via JS -->
                                 </select>
                             </div>
 
-                            <!-- Uzbek Translation / Meaning (Core Meaning of the Group) -->
+                            <!-- Uzbek Meaning -->
                             <div>
-                                <label for="uzbekMeaningInput" class="block text-xs font-bold uppercase tracking-wider text-teal-700 mb-1.5">
-                                    O'zbekcha tarjimasi / umumiy ma'nosi *
-                                </label>
-                                <input type="text" id="uzbekMeaningInput" required placeholder="Masalan: Muhim, ahamiyatli, hal qiluvchi" autocomplete="off"
-                                    class="w-full px-4 py-3 rounded-2xl border border-teal-200 bg-teal-50/40 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none text-sm font-semibold transition">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">O'zbekcha tarjimasi / ma'nosi *</label>
+                                <input type="text" id="uzbekMeaningInput" required placeholder="Masalan: Muhim, ahamiyatli, hal qiluvchi"
+                                    class="w-full px-4 py-3 rounded-2xl border border-teal-200 bg-teal-50/40 focus:bg-white focus:border-teal-500 outline-none text-sm font-bold text-teal-950">
                             </div>
 
-                            <!-- Dynamic Multi-Synonym Inputs -->
+                            <!-- Dynamic Synonyms List -->
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">
-                                        Inglizcha sinonimlar (kamida 2 ta) *
-                                    </label>
-                                    <span id="synonymInputCounter" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">2 ta so'z</span>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Inglizcha sinonimlar *</label>
+                                    <span id="synonymInputCounter" class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">2 ta maydon</span>
                                 </div>
-                                
-                                <div id="dynamicSynonymsContainer" class="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
-                                    <!-- Dynamic inputs rendered via JS -->
+                                <div id="dynamicSynonymsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                    <!-- Dynamic rows injected via JS -->
                                 </div>
-
-                                <button type="button" onclick="addSynonymInputField('')" class="mt-2.5 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50 text-indigo-700 font-bold text-xs transition flex items-center justify-center gap-1.5">
-                                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                <button type="button" onclick="addSynonymInputField()" class="mt-2.5 w-full py-2.5 px-3 rounded-xl border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50 text-indigo-700 font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
                                     <span>Yana sinonim qo'shish (3, 4, 5...)</span>
                                 </button>
-                                <p class="text-[11px] text-slate-400 mt-1.5">Maslahat: Vergul bilan ajratib nusxa qo'ysangiz ham (masalan: <em>Big, Huge, Enormous</em>) avtomatik bo'linadi!</p>
+                                <p class="text-[11px] text-slate-400 mt-1.5">Maslahat: Vergul bilan ajratilgan so'zlarni bitta katakka nusxalab tashlasangiz, avtomatik bo'linadi.</p>
                             </div>
 
                             <button type="submit" id="wordSubmitBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
@@ -406,22 +442,29 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Word Groups List & Search/Filter -->
-                <div class="lg:col-span-7 space-y-4">
-                    <div class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm">
-                        <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center mb-4">
-                            <div class="relative flex-1">
-                                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                                <input type="text" id="wordSearchInput" oninput="renderWordsList()" placeholder="Istalgan sinonim yoki o'zbekcha tarjima bo'yicha qidirish..."
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm">
+                <!-- Right Column: Search & List of Saved Multi-Synonym Groups -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-800">Saqlangan sinonimlar bazasi</h3>
+                                <p class="text-xs text-slate-500">Istalgan guruhni tahrirlang yoki yangi sinonimlar qo'shing</p>
                             </div>
-                            <select id="filterWordsBySection" onchange="renderWordsList()" class="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700 outline-none focus:border-indigo-500">
+                        </div>
+
+                        <!-- Search & Section Filter -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="wordSearchInput" oninput="renderWordsList()" placeholder="So'z yoki tarjima bo'yicha qidirish..."
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm">
+                            </div>
+                            <select id="filterWordsBySection" onchange="renderWordsList()" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700">
                                 <option value="all">Barcha bo'limlar</option>
                             </select>
                         </div>
 
-                        <!-- Words List Container -->
-                        <div id="wordsListContainer" class="space-y-3 max-h-[640px] overflow-y-auto pr-1">
+                        <div id="wordsListContainer" class="space-y-3 pt-1">
                             <!-- Populated via JS -->
                         </div>
                     </div>
@@ -431,34 +474,34 @@
         </section>
 
         <!-- ========================================================= -->
-        <!-- VIEW 3: SECTIONS / CATEGORIES MANAGEMENT ("BO'LIMLAR")    -->
+        <!-- VIEW 3: MANAGE SECTIONS ("BO'LIMLAR")                     -->
         <!-- ========================================================= -->
         <section id="view-sections" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <!-- Create New Section Card -->
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-4 space-y-5">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-                        <div class="flex items-center gap-2.5 mb-4">
-                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-11 h-11 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center">
                                 <i data-lucide="folder-plus" class="w-5 h-5"></i>
                             </div>
                             <div>
                                 <h2 class="text-lg font-extrabold text-slate-800">Yangi bo'lim yaratish</h2>
-                                <p class="text-xs text-slate-500">So'zlarni mavzularga ajrating</p>
+                                <p class="text-xs text-slate-500">Mavzu yoki darslar bo'yicha ajrating</p>
                             </div>
                         </div>
 
                         <form onsubmit="handleAddSection(event)" class="space-y-4">
                             <div>
-                                <label for="newSectionName" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Bo'lim nomi *</label>
-                                <input type="text" id="newSectionName" required placeholder="Masalan: IELTS Writing, 5-dars, Fe'llar..."
-                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none text-sm font-medium transition">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Bo'lim nomi *</label>
+                                <input type="text" id="newSectionName" required placeholder="Masalan: 1-dars yoki IELTS Speaking"
+                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-500 outline-none text-sm font-semibold">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Rang belgisini tanlang</label>
-                                <div class="flex gap-2.5" id="sectionColorPicker">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Bo'lim rangi</label>
+                                <div class="flex items-center gap-3">
                                     <button type="button" data-color="indigo" onclick="selectSectionColor('indigo')" class="color-btn w-8 h-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-indigo-500 transition"></button>
                                     <button type="button" data-color="teal" onclick="selectSectionColor('teal')" class="color-btn w-8 h-8 rounded-full bg-teal-500 transition"></button>
                                     <button type="button" data-color="amber" onclick="selectSectionColor('amber')" class="color-btn w-8 h-8 rounded-full bg-amber-500 transition"></button>
@@ -467,28 +510,32 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-md shadow-teal-100 transition flex items-center justify-center gap-2">
+                            <button type="submit" class="w-full py-3.5 px-5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-md shadow-teal-100 transition flex items-center justify-center gap-2">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                 <span>Bo'limni qo'shish</span>
                             </button>
                         </form>
+                    </div>
 
-                        <!-- Data Management Tools -->
-                        <div class="mt-6 pt-5 border-t border-slate-100 space-y-2.5">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Ma'lumotlarni boshqarish</p>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="exportDataJSON()" class="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Nusxa olish
-                                </button>
-                                <label class="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer">
-                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i> Yuklash
-                                    <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
-                                </label>
-                            </div>
-                            <button onclick="confirmResetDefaults()" class="w-full py-2 px-3 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Boshlang'ich namuna so'zlarni tiklash
+                    <!-- Backup & Restore Box -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-3">
+                        <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Zaxira nusxa (JSON fayl)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Barcha bo'lim va so'zlaringizni fayl sifatida yuklab oling yoki tiklang.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="exportDataJSON()" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Yuklab olish
                             </button>
+                            <label class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Tiklash
+                                <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+                            </label>
                         </div>
+                        <button onclick="confirmResetDefaults()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:underline">
+                            Boshlang'ich namuna so'zlarni tiklash
+                        </button>
                     </div>
                 </div>
 
@@ -496,7 +543,7 @@
                 <div class="lg:col-span-8">
                     <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                         <h3 class="text-lg font-extrabold text-slate-800 mb-1">Mavjud bo'limlar ro'yxati</h3>
-                        <p class="text-xs text-slate-500 mb-5">Har bir bo'lim ichidagi so'zlar sonini ko'rishingiz, nomini o'zgartirishingiz yoki o'chirishingiz mumkin.</p>
+                        <p class="text-xs text-slate-500 mb-5">Har bir bo'lim ichidagi so'zlar sonini ko'rishingiz, nomini o'zgartirishingiz yoki ulashishingiz mumkin.</p>
                         
                         <div id="sectionsGridContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- Populated via JS -->
@@ -507,7 +554,181 @@
             </div>
         </section>
 
+        <!-- ========================================================= -->
+        <!-- VIEW 4: SHARE & CLAIM VIA CODE / LINK ("ULASHISH")        -->
+        <!-- ========================================================= -->
+        <section id="view-share" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Create Share Code / Link with User Limit -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <i data-lucide="share-2" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold text-slate-800">To'plamni ulashish</h2>
+                                <p class="text-xs text-slate-500">O'quvchilar uchun kalit so'z va limit belgilang</p>
+                            </div>
+                        </div>
+
+                        <div id="shareAuthNotice" class="hidden mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                            <p class="font-bold flex items-center gap-1.5">
+                                <i data-lucide="lock" class="w-4 h-4 text-amber-600"></i>
+                                <span>Ulashish uchun hisobingizga kiring</span>
+                            </p>
+                            <p>Kalit so'z yaratish va nechta o'quvchi foydalanganini nazorat qilish uchun tizimga kiring yoki ro'yxatdan o'ting.</p>
+                            <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition">
+                                Kirish / Ro'yxatdan o'tish
+                            </button>
+                        </div>
+
+                        <form id="createShareForm" onsubmit="handleCreateSharePack(event)" class="space-y-4">
+                            <!-- Pack Title -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">To'plam sarlavhasi *</label>
+                                <input type="text" id="sharePackTitle" required placeholder="Masalan: 10-sinf IELTS Sinonimlar"
+                                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-semibold">
+                            </div>
+
+                            <!-- Select Sections to Include -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Qaysi bo'limlar ulashilsin? *</label>
+                                <div id="shareSectionsChecklist" class="space-y-2 max-h-44 overflow-y-auto p-3 rounded-2xl border border-slate-200 bg-slate-50">
+                                    <!-- Populated via JS -->
+                                </div>
+                            </div>
+
+                            <!-- Custom Keyword -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Kalit so'z (Kod) *</label>
+                                    <button type="button" onclick="generateRandomShareKeyword()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                        <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Avto-yaratish
+                                    </button>
+                                </div>
+                                <input type="text" id="shareCustomCode" required placeholder="Masalan: USTOZ-01 yoki IELTS26"
+                                    class="w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-indigo-50/40 focus:bg-white focus:border-indigo-500 outline-none text-sm font-extrabold uppercase tracking-wider text-indigo-900">
+                                <p class="text-[11px] text-slate-400 mt-1">O'quvchilar shu kalit so'zni kiritish orqali so'zlarni yuklab oladi.</p>
+                            </div>
+
+                            <!-- Max Users Limit -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                                    Foydalanishi mumkin bo'lgan odamlar soni (Limit) *
+                                </label>
+                                <div class="grid grid-cols-4 gap-2 mb-2">
+                                    <button type="button" onclick="setShareLimitPreset(1)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">1 kishi</button>
+                                    <button type="button" onclick="setShareLimitPreset(15)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">15 kishi</button>
+                                    <button type="button" onclick="setShareLimitPreset(30)" class="limit-preset py-2 rounded-xl border border-indigo-500 bg-indigo-50 text-indigo-700 text-xs font-bold">30 kishi</button>
+                                    <button type="button" onclick="setShareLimitPreset(0)" class="limit-preset py-2 rounded-xl border border-slate-200 text-xs font-bold hover:border-indigo-500">Cheksiz</button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="shareMaxUsersInput" min="1" max="10000" value="30" placeholder="Odamlar soni"
+                                        class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-bold outline-none focus:border-indigo-500">
+                                    <label class="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50">
+                                        <input type="checkbox" id="shareUnlimitedCheck" onchange="toggleUnlimitedShare(this.checked)" class="rounded text-indigo-600">
+                                        <span>Cheksiz</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="publishShareBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span>Kalit so'z va havola yaratish</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: My Shared Codes & Student Usage Analytics -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-800">Men yaratgan kalit so'zlar</h3>
+                                <p class="text-xs text-slate-500">Har bir kalit so'zdan nechta o'quvchi foydalanganini kuzating va havolani nusxalang.</p>
+                            </div>
+                            <button onclick="loadMySharedPacks()" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 transition" title="Yangilash">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div id="mySharedPacksList" class="space-y-3.5">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
+
+    <!-- ========================================================= -->
+    <!-- LOGIN & REGISTRATION MODAL                                -->
+    <!-- ========================================================= -->
+    <div id="authModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-pop relative">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-teal-500 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
+                    <i data-lucide="user-circle-2" class="w-7 h-7"></i>
+                </div>
+                <h3 id="authModalTitle" class="text-xl font-extrabold text-slate-900">Tizimga kirish</h3>
+                <p id="authModalSubtitle" class="text-xs text-slate-500 mt-1">So'zlaringizni bulutda saqlang va o'quvchilarga ulashing</p>
+            </div>
+
+            <!-- Mode Switch Tabs -->
+            <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-2xl mb-5">
+                <button type="button" id="authTabLogin" onclick="switchAuthMode('login')" class="py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition">
+                    Kirish (Login)
+                </button>
+                <button type="button" id="authTabRegister" onclick="switchAuthMode('register')" class="py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
+                    Ro'yxatdan o'tish
+                </button>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <input type="hidden" id="authModeInput" value="login">
+
+                <!-- Full Name (Register only) -->
+                <div id="authNameField" class="hidden">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Ism va familiyangiz *</label>
+                    <input type="text" id="authFullName" placeholder="Masalan: Sardor Karimov"
+                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Elektron pochta (Email) *</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com"
+                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Parol (kamida 6 ta belgi) *</label>
+                    <input type="password" id="authPassword" required minlength="6" placeholder="••••••••"
+                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none text-sm font-medium">
+                </div>
+
+                <div id="authErrorBox" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
+
+                <button type="submit" id="authSubmitBtn" class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-100 transition">
+                    Kirish
+                </button>
+            </form>
+
+            <div class="mt-4 pt-4 border-t border-slate-100 text-center">
+                <button type="button" onclick="closeAuthModal()" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+                    Mehmon sifatida davom etish →
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================================= -->
     <!-- GAME SUMMARY / RESULTS MODAL                              -->
@@ -579,9 +800,52 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- APPLICATION LOGIC (JAVASCRIPT)                            -->
+    <!-- APPLICATION LOGIC (FIREBASE + GAMES ENGINE)               -->
     <!-- ========================================================= -->
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithCustomToken,
+            signInAnonymously,
+            updateProfile,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            collection,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // 0. FIREBASE INITIALIZATION & AUTH STATE
+        // ==========================================
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sinonim-master-default';
+        let firebaseApp = null;
+        let auth = null;
+        let db = null;
+        let currentUser = null; // Real registered user (non-anonymous) or null
+        let firebaseAuthUser = null; // Any Firebase auth session (including anonymous for public reads)
+
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                firebaseApp = initializeApp(firebaseConfig);
+                auth = getAuth(firebaseApp);
+                db = getFirestore(firebaseApp);
+            }
+        } catch (err) {
+            console.error("Firebase init error:", err);
+        }
+
         // ==========================================
         // 1. DEFAULT DATA & STATE MANAGEMENT (MULTI-SYNONYM ARCHITECTURE)
         // ==========================================
@@ -744,97 +1008,176 @@
                 console.error('LocalStorage saqlashda xatolik:', e);
             }
             updateHeaderStats();
+            syncUserProfileToCloud();
         }
 
-        // ==========================================
-        // 2. WEB AUDIO SYNTHESIZER (NO EXTERNAL FILES)
-        // ==========================================
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (!appState.soundEnabled) return;
+        async function syncUserProfileToCloud() {
+            if (!db || !currentUser) return;
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'vocabulary');
+                await setDoc(userDocRef, {
+                    globalScore: appState.globalScore || 0,
+                    sections: appState.sections,
+                    selectedSectionIds: appState.selectedSectionIds,
+                    words: appState.words,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (e) {
+                console.error('Bulutga saqlashda xatolik:', e);
+            }
+        }
 
-                const now = audioCtx.currentTime;
-                if (type === 'correct') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-                    osc.start(now);
-                    osc.stop(now + 0.22);
-                } else if (type === 'wrong') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(220, now);
-                    osc.frequency.linearRampToValueAtTime(160, now + 0.2);
-                    gain.gain.setValueAtTime(0.18, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                } else if (type === 'win') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.1);
-                    osc.frequency.setValueAtTime(783.99, now + 0.2);
-                    osc.frequency.setValueAtTime(1046.5, now + 0.3);
-                    gain.gain.setValueAtTime(0.16, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
+        async function loadUserProfileFromCloud(uid) {
+            if (!db || !uid) return;
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'vocabulary');
+                const snap = await getDoc(userDocRef);
+                if (snap.exists()) {
+                    const cloudData = snap.data();
+                    if (Array.isArray(cloudData.sections) && Array.isArray(cloudData.words)) {
+                        appState.sections = cloudData.sections;
+                        appState.words = cloudData.words.map(normalizeWordGroup);
+                        appState.selectedSectionIds = cloudData.selectedSectionIds || cloudData.sections.map(s => s.id);
+                        appState.globalScore = cloudData.globalScore || appState.globalScore;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+                        refreshAllViews();
+                        showToast('Shaxsiy bazangiz bulutdan yuklandi!', 'info');
+                    }
+                } else {
+                    // First login: push current local words to their new cloud account
+                    await syncUserProfileToCloud();
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error('Bulutdan yuklashda xatolik:', e);
+            }
         }
 
-        function toggleSound() {
-            appState.soundEnabled = !appState.soundEnabled;
-            saveState();
-            updateSoundIcons();
-            showToast(appState.soundEnabled ? 'Ovoz effektlari yoqildi' : 'Ovoz effektlari o\'chirildi', 'info');
+        function refreshAllViews() {
+            updateHeaderStats();
+            renderGameSectionFilters();
+            populateSectionDropdowns();
+            renderWordsList();
+            renderSectionsList();
+            renderShareSectionChecklist();
         }
 
-        function updateSoundIcons() {
-            document.querySelectorAll('.sound-icon').forEach(icon => {
-                icon.setAttribute('data-lucide', appState.soundEnabled ? 'volume-2' : 'volume-x');
-            });
+        // ==========================================
+        // 1B. AUTHENTICATION (LOGIN / REGISTER / LOGOUT)
+        // ==========================================
+        function openAuthModal(mode = 'login') {
+            switchAuthMode(mode);
+            document.getElementById('authErrorBox').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('hidden');
             lucide.createIcons();
         }
 
-        // ==========================================
-        // 3. UI NAVIGATION & NOTIFICATIONS
-        // ==========================================
-        function switchTab(tabName) {
-            // Stop any running game timers when leaving games tab
-            if (tabName !== 'games' && currentGame.timerInterval) {
-                clearInterval(currentGame.timerInterval);
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthMode(mode) {
+            document.getElementById('authModeInput').value = mode;
+            const isReg = mode === 'register';
+            document.getElementById('authNameField').classList.toggle('hidden', !isReg);
+            document.getElementById('authFullName').required = isReg;
+
+            document.getElementById('authModalTitle').textContent = isReg ? 'Ro\'yxatdan o\'tish' : 'Tizimga kirish';
+            document.getElementById('authSubmitBtn').textContent = isReg ? 'Hisob yaratish' : 'Kirish';
+
+            const loginTab = document.getElementById('authTabLogin');
+            const regTab = document.getElementById('authTabRegister');
+            if (isReg) {
+                regTab.className = 'py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition';
+                loginTab.className = 'py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+            } else {
+                loginTab.className = 'py-2 rounded-xl text-xs font-extrabold bg-white text-indigo-700 shadow-sm transition';
+                regTab.className = 'py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
             }
+        }
 
-            ['games', 'words', 'sections'].forEach(t => {
-                const view = document.getElementById(`view-${t}`);
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === tabName) {
-                    view.classList.remove('hidden');
-                    btn.classList.add('bg-white', 'text-indigo-700', 'shadow-sm');
-                    btn.classList.remove('text-slate-600');
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            if (!auth) {
+                showToast('Server bilan ulanish mavjud emas', 'error');
+                return;
+            }
+            const mode = document.getElementById('authModeInput').value;
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const fullName = document.getElementById('authFullName').value.trim();
+            const errorBox = document.getElementById('authErrorBox');
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            errorBox.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Kuting...';
+
+            try {
+                if (mode === 'register') {
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    if (fullName) {
+                        await updateProfile(cred.user, { displayName: fullName });
+                    }
+                    showToast(`Xush kelibsiz, ${fullName || email}!`);
                 } else {
-                    view.classList.add('hidden');
-                    btn.classList.remove('bg-white', 'text-indigo-700', 'shadow-sm');
-                    btn.classList.add('text-slate-600');
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showToast('Tizimga muvaffaqiyatli kirdingiz!');
                 }
-            });
+                closeAuthModal();
+            } catch (err) {
+                let msg = 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
+                if (err.code === 'auth/email-already-in-use') msg = 'Bu elektron pochta allaqachon ro\'yxatdan o\'tgan.';
+                else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') msg = 'Email yoki parol noto\'g\'ri.';
+                else if (err.code === 'auth/weak-password') msg = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.';
+                errorBox.textContent = msg;
+                errorBox.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = mode === 'register' ? 'Hisob yaratish' : 'Kirish';
+            }
+        }
 
-            if (tabName === 'games') {
-                renderGameSectionFilters();
-            } else if (tabName === 'words') {
-                populateSectionDropdowns();
-                renderWordsList();
-            } else if (tabName === 'sections') {
-                renderSectionsList();
+        async function handleLogout() {
+            if (!auth) return;
+            try {
+                await signOut(auth);
+                await signInAnonymously(auth);
+                showToast('Hisobdan chiqdingiz', 'info');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function updateAuthHeaderUI() {
+            const container = document.getElementById('authHeaderContainer');
+            const shareNotice = document.getElementById('shareAuthNotice');
+            const shareForm = document.getElementById('createShareForm');
+
+            if (currentUser) {
+                const name = currentUser.displayName || currentUser.email.split('@')[0];
+                container.innerHTML = `
+                    <div class="flex items-center gap-2 bg-slate-100 pl-3 pr-1.5 py-1 rounded-2xl border border-slate-200">
+                        <div class="text-right">
+                            <span class="block text-xs font-extrabold text-slate-800 leading-tight">${escapeHTML(name)}</span>
+                            <span class="block text-[10px] text-emerald-600 font-semibold">Bulutga ulangan</span>
+                        </div>
+                        <button onclick="handleLogout()" title="Hisobdan chiqish"
+                            class="p-2 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                if (shareNotice) shareNotice.classList.add('hidden');
+                if (shareForm) shareForm.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                        <i data-lucide="user-check" class="w-4 h-4"></i>
+                        <span>Kirish / Ro'yxatdan o'tish</span>
+                    </button>
+                `;
+                if (shareNotice) shareNotice.classList.remove('hidden');
+                if (shareForm) shareForm.classList.add('opacity-50', 'pointer-events-none');
             }
             lucide.createIcons();
         }
@@ -899,6 +1242,70 @@
             document.getElementById('totalWordsBadge').textContent = appState.words.length;
             document.getElementById('totalSectionsBadge').textContent = appState.sections.length;
             document.getElementById('globalScoreDisplay').textContent = appState.globalScore;
+        }
+
+        // ==========================================
+        // 3B. WEB AUDIO SOUND EFFECTS ENGINE
+        // ==========================================
+        let audioCtx = null;
+
+        function toggleSound() {
+            appState.soundEnabled = !appState.soundEnabled;
+            saveState();
+            updateSoundIcons();
+            showToast(appState.soundEnabled ? 'Ovoz effektlari yoqildi' : 'Ovoz effektlari o\'chirildi', 'info');
+        }
+
+        function updateSoundIcons() {
+            document.querySelectorAll('.sound-icon').forEach(icon => {
+                icon.setAttribute('data-lucide', appState.soundEnabled ? 'volume-2' : 'volume-x');
+            });
+            lucide.createIcons();
+        }
+
+        function playSound(type) {
+            if (!appState.soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'wrong') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(165, now + 0.1);
+                    gain.gain.setValueAtTime(0.14, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'win') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                }
+            } catch (e) {
+                // Ignore audio errors on restricted devices
+            }
         }
 
         // ==========================================
@@ -1013,8 +1420,49 @@
             });
         }
 
+        function switchTab(tabName) {
+            // Stop any running game timers when leaving games tab
+            if (tabName !== 'games' && currentGame.timerInterval) {
+                clearInterval(currentGame.timerInterval);
+            }
+
+            ['games', 'words', 'sections', 'share'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    view.classList.remove('hidden');
+                    btn.classList.add('bg-white', 'text-indigo-700', 'shadow-sm');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    view.classList.add('hidden');
+                    btn.classList.remove('bg-white', 'text-indigo-700', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            if (tabName === 'games') {
+                renderGameSectionFilters();
+            } else if (tabName === 'words') {
+                populateSectionDropdowns();
+                renderWordsList();
+            } else if (tabName === 'sections') {
+                renderSectionsList();
+            } else if (tabName === 'share') {
+                renderShareSectionChecklist();
+                loadMySharedPacks();
+            }
+            lucide.createIcons();
+        }
+
+        function openSectionInWords(secId) {
+            switchTab('words');
+            document.getElementById('filterWordsBySection').value = secId;
+            renderWordsList();
+        }
+
         function renderSectionsList() {
             const container = document.getElementById('sectionsGridContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             appState.sections.forEach(sec => {
@@ -1040,6 +1488,9 @@
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </button>
                         <div class="flex items-center gap-1">
+                            <button onclick="quickShareSection('${sec.id}')" class="p-1.5 rounded-lg text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition" title="Kod / Havola orqali ulashish">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                            </button>
                             <button onclick="renameSection('${sec.id}')" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition" title="Nomini o'zgartirish">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
@@ -1054,51 +1505,42 @@
             lucide.createIcons();
         }
 
-        function openSectionInWords(secId) {
-            switchTab('words');
-            document.getElementById('filterWordsBySection').value = secId;
-            document.getElementById('wordSectionSelect').value = secId;
-            renderWordsList();
-        }
-
         // ==========================================
-        // 5. MULTI-SYNONYM GROUPS & TRANSLATIONS MANAGEMENT
+        // 5. WORDS & DYNAMIC SYNONYM FIELDS MANAGEMENT
         // ==========================================
-        function populateSectionDropdowns(selectSpecificId = null) {
-            const formSelect = document.getElementById('wordSectionSelect');
-            const filterSelect = document.getElementById('filterWordsBySection');
-            const currentFilter = filterSelect.value;
+        function populateSectionDropdowns(preselectId = null) {
+            const wordSecSelect = document.getElementById('wordSectionSelect');
+            const filterSecSelect = document.getElementById('filterWordsBySection');
+            if (!wordSecSelect || !filterSecSelect) return;
 
-            formSelect.innerHTML = '';
-            filterSelect.innerHTML = '<option value="all">Barcha bo\'limlar</option>';
+            const currentWordVal = preselectId || wordSecSelect.value;
+            const currentFilterVal = filterSecSelect.value || 'all';
 
-            appState.sections.forEach(sec => {
-                const opt1 = document.createElement('option');
-                opt1.value = sec.id;
-                opt1.textContent = sec.name;
-                formSelect.appendChild(opt1);
+            wordSecSelect.innerHTML = appState.sections.map(sec =>
+                `<option value="${sec.id}">${escapeHTML(sec.name)}</option>`
+            ).join('');
 
-                const opt2 = document.createElement('option');
-                opt2.value = sec.id;
-                opt2.textContent = sec.name;
-                filterSelect.appendChild(opt2);
-            });
-
-            if (selectSpecificId) {
-                formSelect.value = selectSpecificId;
+            if (currentWordVal && appState.sections.some(s => s.id === currentWordVal)) {
+                wordSecSelect.value = currentWordVal;
             }
-            if (currentFilter && (currentFilter === 'all' || appState.sections.some(s => s.id === currentFilter))) {
-                filterSelect.value = currentFilter;
+
+            filterSecSelect.innerHTML = `<option value="all">Barcha bo'limlar (${appState.words.length})</option>` +
+                appState.sections.map(sec => {
+                    const cnt = appState.words.filter(w => w.sectionId === sec.id).length;
+                    return `<option value="${sec.id}">${escapeHTML(sec.name)} (${cnt})</option>`;
+                }).join('');
+
+            if (currentFilterVal === 'all' || appState.sections.some(s => s.id === currentFilterVal)) {
+                filterSecSelect.value = currentFilterVal;
             }
         }
 
         function initDynamicSynonymInputs(values = ['', '']) {
             const container = document.getElementById('dynamicSynonymsContainer');
+            if (!container) return;
             container.innerHTML = '';
-            const initial = values.length >= 2 ? values : [...values, '', ''].slice(0, 2);
-            initial.forEach(val => addSynonymInputField(val, false));
-            updateSynonymInputCounter();
-            lucide.createIcons();
+            const list = (Array.isArray(values) && values.length >= 2) ? values : ['', ''];
+            list.forEach(val => addSynonymInputField(val, false));
         }
 
         function addSynonymInputField(value = '', shouldFocus = true) {
@@ -2300,13 +2742,449 @@
         // ==========================================
         // 10. INITIALIZATION ON LOAD
         // ==========================================
-        window.addEventListener('DOMContentLoaded', () => {
+        // 8B. CODE & LINK SHARING WITH USAGE LIMIT (FIRESTORE)
+        // ==========================================
+        function getClaimerIdentifier() {
+            if (currentUser) return currentUser.uid;
+            let deviceId = localStorage.getItem('sinonim_device_id');
+            if (!deviceId) {
+                deviceId = 'dev-' + crypto.randomUUID();
+                localStorage.setItem('sinonim_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        function quickShareSection(secId) {
+            switchTab('share');
+            const sec = appState.sections.find(s => s.id === secId);
+            if (sec) {
+                document.getElementById('sharePackTitle').value = sec.name;
+                document.querySelectorAll('.share-sec-checkbox').forEach(cb => {
+                    cb.checked = (cb.value === secId);
+                });
+                generateRandomShareKeyword();
+            }
+        }
+
+        function renderShareSectionChecklist() {
+            const container = document.getElementById('shareSectionsChecklist');
+            if (!container) return;
+            container.innerHTML = appState.sections.map(sec => {
+                const count = appState.words.filter(w => w.sectionId === sec.id).length;
+                return `
+                    <label class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 cursor-pointer">
+                        <div class="flex items-center gap-2.5">
+                            <input type="checkbox" value="${sec.id}" checked class="share-sec-checkbox rounded text-indigo-600 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">${escapeHTML(sec.name)}</span>
+                        </div>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${count} ta guruh</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function generateRandomShareKeyword() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'SIN-';
+            for (let i = 0; i < 5; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('shareCustomCode').value = code;
+        }
+
+        function setShareLimitPreset(val) {
+            const input = document.getElementById('shareMaxUsersInput');
+            const check = document.getElementById('shareUnlimitedCheck');
+            if (val === 0) {
+                check.checked = true;
+                input.disabled = true;
+            } else {
+                check.checked = false;
+                input.disabled = false;
+                input.value = val;
+            }
+        }
+
+        function toggleUnlimitedShare(isUnlimited) {
+            document.getElementById('shareMaxUsersInput').disabled = isUnlimited;
+        }
+
+        function normalizeCodeKey(rawInput) {
+            let cleaned = rawInput.trim();
+            // Extract ?code=... if user pasted a full URL
+            if (cleaned.includes('code=')) {
+                try {
+                    const urlObj = new URL(cleaned.startsWith('http') ? cleaned : 'https://example.com/' + cleaned);
+                    const param = urlObj.searchParams.get('code');
+                    if (param) cleaned = param;
+                } catch (e) {
+                    const match = cleaned.match(/code=([^&\s]+)/i);
+                    if (match) cleaned = decodeURIComponent(match[1]);
+                }
+            }
+            return cleaned.replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
+        }
+
+        function buildShareableLink(displayCode) {
+            const url = new URL(window.location.href.split('?')[0]);
+            url.searchParams.set('code', displayCode);
+            return url.toString();
+        }
+
+        async function handleCreateSharePack(e) {
+            e.preventDefault();
+            if (!db || !currentUser) {
+                openAuthModal('login');
+                showToast('Ulashish uchun avval tizimga kiring!', 'warning');
+                return;
+            }
+
+            const title = document.getElementById('sharePackTitle').value.trim();
+            const rawCode = document.getElementById('shareCustomCode').value.trim().toUpperCase();
+            const codeKey = normalizeCodeKey(rawCode);
+            const isUnlimited = document.getElementById('shareUnlimitedCheck').checked;
+            const maxUsers = isUnlimited ? null : parseInt(document.getElementById('shareMaxUsersInput').value, 10);
+
+            const selectedSecIds = Array.from(document.querySelectorAll('.share-sec-checkbox:checked')).map(cb => cb.value);
+
+            if (!codeKey || codeKey.length < 3) {
+                showToast('Kalit so\'z kamida 3 ta harf yoki raqamdan iborat bo\'lsin!', 'warning');
+                return;
+            }
+            if (selectedSecIds.length === 0) {
+                showToast('Kamida bitta bo\'limni tanlang!', 'warning');
+                return;
+            }
+            if (!isUnlimited && (!maxUsers || maxUsers < 1)) {
+                showToast('Foydalanuvchilar soni kamida 1 bo\'lishi kerak!', 'warning');
+                return;
+            }
+
+            const sectionsToShare = appState.sections.filter(s => selectedSecIds.includes(s.id));
+            const wordsToShare = appState.words.filter(w => selectedSecIds.includes(w.sectionId));
+
+            if (wordsToShare.length === 0) {
+                showToast('Tanlangan bo\'limlarda hali so\'zlar yo\'q!', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('publishShareBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saqlanmoqda...';
+
+            try {
+                const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
+                const existing = await getDoc(packDocRef);
+                if (existing.exists() && existing.data().creatorId !== currentUser.uid) {
+                    showToast('Bu kalit so\'z band! Boshqa kalit so\'z tanlang.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Kalit so\'z va havola yaratish</span>';
+                    lucide.createIcons();
+                    return;
+                }
+
+                const creatorName = currentUser.displayName || currentUser.email.split('@')[0];
+                const packData = {
+                    code: rawCode,
+                    codeKey: codeKey,
+                    title: title,
+                    creatorId: currentUser.uid,
+                    creatorName: creatorName,
+                    maxUses: maxUsers,
+                    usesCount: existing.exists() ? (existing.data().usesCount || 0) : 0,
+                    usedBy: existing.exists() ? (existing.data().usedBy || []) : [],
+                    sections: sectionsToShare,
+                    words: wordsToShare,
+                    createdAt: Date.now()
+                };
+
+                await setDoc(packDocRef, packData);
+                showToast(`"${rawCode}" kalit so'zi yaratildi! (${wordsToShare.length} ta guruh)`);
+                document.getElementById('sharePackTitle').value = '';
+                document.getElementById('shareCustomCode').value = '';
+                await loadMySharedPacks();
+            } catch (err) {
+                console.error(err);
+                showToast('Ulashishda xatolik yuz berdi!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Kalit so\'z va havola yaratish</span>';
+                lucide.createIcons();
+            }
+        }
+
+        async function loadMySharedPacks() {
+            const container = document.getElementById('mySharedPacksList');
+            if (!container) return;
+
+            if (!db || !currentUser) {
+                container.innerHTML = `
+                    <div class="text-center py-10 px-4 text-slate-500 text-sm">
+                        O'zingiz yaratgan kalit so'zlar ro'yxatini ko'rish uchun tizimga kiring.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<div class="text-center py-8 text-xs font-semibold text-slate-400">Yuklanmoqda...</div>`;
+
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shared_packs');
+                const snap = await getDocs(colRef);
+                const myPacks = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.creatorId === currentUser.uid) {
+                        myPacks.push(data);
+                    }
+                });
+                myPacks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                if (myPacks.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-10 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                            <p class="text-sm font-bold text-slate-700">Hali ulashilgan to'plamlar yo'q</p>
+                            <p class="text-xs text-slate-500 mt-1">Chap tarafdagi shakl orqali kalit so'z yarating va o'quvchilarga yuboring.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = myPacks.map(pack => {
+                    const limitLabel = pack.maxUses === null
+                        ? `${pack.usesCount || 0} / Cheksiz o'quvchi`
+                        : `${pack.usesCount || 0} / ${pack.maxUses} o'quvchi foydalandi`;
+                    const isFull = pack.maxUses !== null && (pack.usesCount || 0) >= pack.maxUses;
+                    const shareUrl = buildShareableLink(pack.code);
+
+                    return `
+                        <div class="p-4 rounded-2xl border ${isFull ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200 bg-slate-50/60'} space-y-3">
+                            <div class="flex flex-wrap items-start justify-between gap-2">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-3 py-1 rounded-xl bg-indigo-600 text-white font-extrabold text-xs tracking-wider">${escapeHTML(pack.code)}</span>
+                                        <h4 class="font-extrabold text-slate-800 text-sm sm:text-base">${escapeHTML(pack.title)}</h4>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        ${pack.sections.length} ta bo'lim • ${pack.words.length} ta sinonim guruhi
+                                    </p>
+                                </div>
+
+                                <span class="px-2.5 py-1 rounded-full text-xs font-extrabold ${isFull ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                                    ${limitLabel}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/70">
+                                <button onclick="copyTextFallback('${escapeAttr(pack.code)}', 'Kalit so\'z nusxalandi!')"
+                                    class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                    <span>Kodni nusxalash</span>
+                                </button>
+                                <button onclick="copyTextFallback('${escapeAttr(shareUrl)}', 'Havola nusxalandi!')"
+                                    class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-teal-400 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition">
+                                    <i data-lucide="link" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    <span>Havolani nusxalash</span>
+                                </button>
+                                <button onclick="deleteSharedPack('${escapeAttr(pack.codeKey)}')"
+                                    class="ml-auto p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Kalit so'zni o'chirish">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                lucide.createIcons();
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="text-center py-6 text-xs text-rose-600">Ro'yxatni yuklashda xatolik yuz berdi.</div>`;
+            }
+        }
+
+        async function deleteSharedPack(codeKey) {
+            if (!db || !currentUser) return;
+            openCustomDialog({
+                title: 'Kalit so\'zni o\'chirish',
+                message: 'Ushbu kalit so\'z o\'chirilsa, yangi o\'quvchilar undan foydalana olmaydi. Davom etasizmi?',
+                confirmText: 'Ha, o\'chirish',
+                isDanger: true,
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey));
+                        showToast('Kalit so\'z o\'chirildi', 'info');
+                        loadMySharedPacks();
+                    } catch (e) {
+                        showToast('O\'chirishda xatolik!', 'error');
+                    }
+                }
+            });
+        }
+
+        async function handleQuickCodeClaim(e) {
+            e.preventDefault();
+            const rawVal = document.getElementById('quickShareCodeInput').value;
+            await claimSharedPackByCode(rawVal);
+        }
+
+        async function claimSharedPackByCode(rawCodeOrUrl) {
+            const codeKey = normalizeCodeKey(rawCodeOrUrl);
+            if (!codeKey) {
+                showToast('Iltimos, kalit so\'z yoki havolani kiriting!', 'warning');
+                return;
+            }
+            if (!db || !firebaseAuthUser) {
+                showToast('Serverga ulanilmoqda, biroz kuting...', 'info');
+                return;
+            }
+
+            const btn = document.getElementById('quickClaimBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>Tekshirilmoqda...</span>';
+            }
+
+            try {
+                const packDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shared_packs', codeKey);
+                const snap = await getDoc(packDocRef);
+
+                if (!snap.exists()) {
+                    showToast('Bunday kalit so\'z topilmadi. Tekshirib qayta kiriting!', 'error');
+                    return;
+                }
+
+                const pack = snap.data();
+                const claimerId = getClaimerIdentifier();
+                const usedBy = Array.isArray(pack.usedBy) ? pack.usedBy : [];
+                const alreadyClaimed = usedBy.includes(claimerId);
+
+                // Check usage limit if not already claimed by this user/device
+                if (!alreadyClaimed && pack.maxUses !== null && (pack.usesCount || 0) >= pack.maxUses) {
+                    showToast('Kechirasiz, ushbu kalit so\'z uchun foydalanish limiti tugagan!', 'error');
+                    return;
+                }
+
+                // Increment usage counter if new claimer
+                if (!alreadyClaimed) {
+                    await updateDoc(packDocRef, {
+                        usesCount: (pack.usesCount || 0) + 1,
+                        usedBy: [...usedBy, claimerId]
+                    });
+                }
+
+                // Import shared sections & words into student's local/cloud vocabulary
+                const secIdMap = new Map();
+                (pack.sections || []).forEach(sharedSec => {
+                    const newSecId = 'sec-imp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+                    secIdMap.set(sharedSec.id, newSecId);
+                    appState.sections.push({
+                        id: newSecId,
+                        name: `${sharedSec.name} (${pack.code})`,
+                        color: sharedSec.color || 'indigo'
+                    });
+                    appState.selectedSectionIds.push(newSecId);
+                });
+
+                let importedWordsCount = 0;
+                (pack.words || []).forEach(sharedWord => {
+                    const normalized = normalizeWordGroup(sharedWord);
+                    const mappedSecId = secIdMap.get(normalized.sectionId) || appState.sections[0].id;
+                    appState.words.unshift({
+                        id: 'w-imp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+                        sectionId: mappedSecId,
+                        uzbek: normalized.uzbek,
+                        synonyms: normalized.synonyms
+                    });
+                    importedWordsCount++;
+                });
+
+                saveState();
+                refreshAllViews();
+                document.getElementById('quickShareCodeInput').value = '';
+                showToast(`Muvaffaqiyatli yuklandi! "${pack.title}" to'plamidan ${importedWordsCount} ta sinonim guruhi qo'shildi!`);
+            } catch (err) {
+                console.error(err);
+                showToast('Yuklab olishda xatolik yuz berdi!', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="download-cloud" class="w-4 h-4"></i><span>Yuklab olish</span>';
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        function copyTextFallback(text, successMsg) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast(successMsg);
+        }
+
+        // Expose functions to inline HTML event handlers (required inside type="module")
+        Object.assign(window, {
+            switchTab, toggleSound, selectSectionColor, handleAddSection, quickAddSectionPrompt,
+            renameSection, deleteSection, openSectionInWords, addSynonymInputField,
+            removeSynonymInputField, handleSynonymPaste, handleWordSubmit, editWord,
+            resetWordForm, deleteWord, renderWordsList, toggleGameSection, selectAllSections,
+            startGame, exitGame, closeResultModal, initGame1_Matching, handleG1Select,
+            handleG2Answer, pickG3Letter, removeG3Letter, clearG3Letters, useG3Hint,
+            skipG3Word, handleG4Choice, flipG5Card, exportDataJSON, importDataJSON,
+            confirmResetDefaults, openAuthModal, closeAuthModal, switchAuthMode,
+            handleAuthSubmit, handleLogout, handleQuickCodeClaim, handleCreateSharePack,
+            generateRandomShareKeyword, setShareLimitPreset, toggleUnlimitedShare,
+            loadMySharedPacks, deleteSharedPack, quickShareSection, copyTextFallback
+        });
+
+        // ==========================================
+        // 10. INITIALIZATION & AUTH BOOTSTRAP
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', async () => {
             updateHeaderStats();
             updateSoundIcons();
             renderGameSectionFilters();
             populateSectionDropdowns();
             initDynamicSynonymInputs(['', '']);
+            updateAuthHeaderUI();
             lucide.createIcons();
+
+            // Authenticate Firebase first (Custom Token -> Anonymous fallback), then handle URL ?code=
+            if (auth) {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else if (!auth.currentUser) {
+                        await signInAnonymously(auth);
+                    }
+                } catch (e) {
+                    console.error('Initial auth error:', e);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    firebaseAuthUser = user;
+                    if (user && !user.isAnonymous) {
+                        currentUser = user;
+                        updateAuthHeaderUI();
+                        await loadUserProfileFromCloud(user.uid);
+                        loadMySharedPacks();
+                    } else {
+                        currentUser = null;
+                        updateAuthHeaderUI();
+                    }
+
+                    // Auto-detect ?code=XYZ in URL on first load
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const sharedCodeParam = urlParams.get('code');
+                    if (sharedCodeParam && user) {
+                        document.getElementById('quickShareCodeInput').value = sharedCodeParam;
+                        // Clean URL parameter so refreshing doesn't re-import
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        await claimSharedPackByCode(sharedCodeParam);
+                    }
+                });
+            }
         });
     </script>
 </body>
